@@ -254,3 +254,4 @@ PORT=3000
 ## License
 
 Built for a hackathon — March 2026.
+# firsttech-hackathon-404-team-not-found
