@@ -1,0 +1,64 @@
+import React from "react";
+import {
+  View,
+  Text,
+  TextInput as RNTextInput,
+  StyleSheet,
+  TextInputProps,
+} from "react-native";
+import { COLORS, SPACING, FONT_SIZE } from "../constants";
+
+interface Props extends TextInputProps {
+  label: string;
+  error?: string;
+}
+
+export const TextInput: React.FC<Props> = ({
+  label,
+  error,
+  style,
+  ...rest
+}) => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.label}>{label}</Text>
+      <RNTextInput
+        style={[styles.input, error ? styles.inputError : undefined, style]}
+        placeholderTextColor={COLORS.textSecondary}
+        {...rest}
+      />
+      {error && <Text style={styles.error}>{error}</Text>}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: SPACING.md,
+  },
+  label: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "600",
+    color: COLORS.text,
+    marginBottom: SPACING.xs,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 12,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md - 2,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.text,
+    backgroundColor: COLORS.surface,
+    minHeight: 48,
+  },
+  inputError: {
+    borderColor: COLORS.error,
+  },
+  error: {
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.error,
+    marginTop: SPACING.xs,
+  },
+});

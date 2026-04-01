@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+ios/Pods/
+android/.gradle/
+android/app/build/
+*.tsbuildinfo
+coverage/
+tmp_assets/
