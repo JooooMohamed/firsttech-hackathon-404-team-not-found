@@ -1,71 +1,85 @@
-# EasyPoints — Deploy to Render (Free)
+# EasyPoints — Deploy to Koyeb (100% Free, No Credit Card)
 
 ## Quick Deploy Steps
 
-### 1. Push to GitHub
+### 1. Push to GitHub (already done)
 
-```bash
-cd /Users/youssefelghzaly/Developer/EasyPoints
-git init
-git add .
-git commit -m "EasyPoints MVP — ready for deployment"
-git remote add origin https://github.com/YOUR_USERNAME/EasyPoints.git
-git push -u origin main
-```
+Repo: `https://github.com/Youssef-ElGhazaly/firsttech-hackathon-404-team-not-found`
 
-### 2. Deploy on Render
+### 2. Deploy on Koyeb
 
-1. Go to [https://dashboard.render.com](https://dashboard.render.com)
-2. Sign up / log in with your **GitHub account**
-3. Click **"New +"** → **"Blueprint"**
-4. Connect your `EasyPoints` GitHub repo
-5. Render will auto-detect `render.yaml` and create the service
-6. **Set the environment variables** when prompted:
+1. Go to [https://app.koyeb.com](https://app.koyeb.com)
+2. **Sign up with your GitHub account** — no credit card needed
+3. Click **"Create Web Service"**
+4. Choose **"GitHub"** as the deployment method
+5. Connect / authorize the `Youssef-ElGhazaly` GitHub account
+6. Select the `firsttech-hackathon-404-team-not-found` repo
+7. Configure the service:
+
+| Setting             | Value                      |
+| ------------------- | -------------------------- |
+| **Builder**         | Dockerfile                 |
+| **Dockerfile path** | `server/Dockerfile`        |
+| **Work directory**  | `server`                   |
+| **Service name**    | `easypoints-api`           |
+| **Instance type**   | Free (nano)                |
+| **Region**          | Washington, D.C. (closest) |
+| **Port**            | `3000`                     |
+
+8. Add **Environment Variables**:
 
 | Variable      | Value                                                                                                                                 |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `MONGODB_URI` | `mongodb+srv://easypoints:EasyPoints2026%21@easypoints.g77mr0h.mongodb.net/easypoints?retryWrites=true&w=majority&appName=EasyPoints` |
 | `JWT_SECRET`  | `easypoints-hackathon-secret-2026`                                                                                                    |
+| `PORT`        | `3000`                                                                                                                                |
 
-7. Click **"Apply"** — Render will build and deploy your server
+9. Click **"Deploy"** — Koyeb will build your Docker image and deploy it
 
-### 3. Verify It Works
+### 3. Get Your URL & Update the App
 
-Once deployed, your API will be live at:
+Once deployed, Koyeb gives you a URL like:
 
 ```
-https://easypoints-api.onrender.com/api
+https://easypoints-api-<your-koyeb-username>.koyeb.app
 ```
 
-Test login:
+Copy that URL, then update `mobile/src/constants/index.ts`:
+
+```typescript
+export const API_BASE_URL =
+  "https://easypoints-api-YOUR_USERNAME.koyeb.app/api";
+```
+
+### 4. Test It
 
 ```bash
-curl -s https://easypoints-api.onrender.com/api/auth/login \
+curl -s https://easypoints-api-YOUR_USERNAME.koyeb.app/api/auth/login \
   -X POST -H "Content-Type: application/json" \
   -d '{"email":"youssef@demo.com","password":"demo123"}'
 ```
 
 You should get back a JSON with `token` and `user`.
 
-### 4. Install the APK
+### 5. Rebuild the APK (after updating URL)
 
-The APK is already configured to use the Render URL. Install it on any Android device:
+```bash
+cd mobile/android && ./gradlew assembleRelease
+```
 
-```
-mobile/android/app/build/outputs/apk/release/app-release.apk
-```
+Install: `mobile/android/app/build/outputs/apk/release/app-release.apk`
 
 ---
 
 ## Architecture
 
 ```
-Phone (APK)  →  Render (NestJS API)  →  MongoDB Atlas (Cloud DB)
-   HTTPS            Free Tier              Free Tier (512MB)
+Phone (APK)  →  Koyeb (NestJS API)  →  MongoDB Atlas (Cloud DB)
+   HTTPS          Free nano              Free Tier (512MB)
 ```
 
-- **Mobile app** → talks to `https://easypoints-api.onrender.com/api`
-- **Render server** → reads `MONGODB_URI` env var → connects to Atlas
+- **Mobile app** → talks to `https://easypoints-api-xxx.koyeb.app/api`
+- **Koyeb server** → reads `MONGODB_URI` env var → connects to Atlas
 - **MongoDB Atlas** → cloud database, already has all seed data
 
 No local server needed. Works from anywhere with internet.
@@ -74,29 +88,26 @@ No local server needed. Works from anywhere with internet.
 
 ## Important Notes
 
-### Free Tier Limitations
+### Why Koyeb (Not Render)?
 
-- Render free tier **spins down after 15 min of inactivity**
-- First request after spin-down takes ~30-60 seconds (cold start)
-- After that, responses are fast until next idle period
+- Render free tier now **requires a credit card**
+- Koyeb free tier is **truly free — no card needed**
+- Both offer Docker deployments with GitHub integration
 
-### If the Render URL Changes
+### Free Tier Details
 
-If you rename the service, update `mobile/src/constants/index.ts`:
-
-```typescript
-export const API_BASE_URL = "https://YOUR-NEW-NAME.onrender.com/api";
-```
-
-Then rebuild: `cd mobile/android && ./gradlew assembleRelease`
+- **1 free nano instance** (256 MB RAM, 0.1 vCPU)
+- Always-on — **no cold starts** (unlike Render!)
+- Auto-deploys on every `git push` to `main`
+- Free SSL/HTTPS included
 
 ### Local Development
 
-To develop locally, uncomment the local URL in `mobile/src/constants/index.ts`:
+To develop locally, update `mobile/src/constants/index.ts`:
 
 ```typescript
 // PRODUCTION:
-// export const API_BASE_URL = 'https://easypoints-api.onrender.com/api';
+// export const API_BASE_URL = 'https://easypoints-api-xxx.koyeb.app/api';
 
 // LOCAL DEV:
 const SERVER_IP = "192.168.1.8";
@@ -106,10 +117,10 @@ export const API_BASE_URL = `http://${SERVER_IP}:${SERVER_PORT}/api`;
 
 ---
 
-## Files Added for Deployment
+## Files for Deployment
 
-| File                   | Purpose                                                     |
-| ---------------------- | ----------------------------------------------------------- |
-| `render.yaml`          | Render Infrastructure as Code — auto-configures the service |
-| `server/Dockerfile`    | Multi-stage Docker build for production                     |
-| `server/.dockerignore` | Excludes node_modules/dist from Docker context              |
+| File                   | Purpose                                        |
+| ---------------------- | ---------------------------------------------- |
+| `server/Dockerfile`    | Multi-stage Docker build for production        |
+| `server/.dockerignore` | Excludes node_modules/dist from Docker context |
+| `render.yaml`          | (Legacy) Render config — kept for reference    |
