@@ -1,7 +1,7 @@
 // ─── Server URL ──────────────────────────────────────────
 // PRODUCTION: Points to the deployed Vercel server (works from anywhere).
-// After deploying, update this URL to your Vercel project URL.
-export const API_BASE_URL = 'https://easypoints-server.vercel.app/api';
+export const API_BASE_URL =
+  'https://firsttech-hackathon-404-team-not-fo.vercel.app/api';
 
 // ─── For LOCAL development only (uncomment and comment the line above) ───
 // const SERVER_IP = '192.168.1.8';
