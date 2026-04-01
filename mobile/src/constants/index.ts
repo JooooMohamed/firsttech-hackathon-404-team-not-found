@@ -1,7 +1,7 @@
 // ─── Server URL ──────────────────────────────────────────
-// PRODUCTION: Points to the deployed Render server (works from anywhere).
-// The server connects to MongoDB Atlas — all data is live.
-export const API_BASE_URL = 'https://easypoints-api.onrender.com/api';
+// PRODUCTION: Points to the deployed Vercel server (works from anywhere).
+// After deploying, update this URL to your Vercel project URL.
+export const API_BASE_URL = 'https://easypoints-server.vercel.app/api';
 
 // ─── For LOCAL development only (uncomment and comment the line above) ───
 // const SERVER_IP = '192.168.1.8';
