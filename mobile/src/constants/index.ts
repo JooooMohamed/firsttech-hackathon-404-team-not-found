@@ -1,7 +1,6 @@
 // ─── Server URL ──────────────────────────────────────────
-// PRODUCTION: Update this after deploying to Koyeb.
-// Go to https://app.koyeb.com → your service → copy the URL.
-// Format: https://easypoints-api-<your-username>.koyeb.app/api
+// PRODUCTION: Points to the deployed Render server (works from anywhere).
+// The server connects to MongoDB Atlas — all data is live.
 export const API_BASE_URL = 'https://easypoints-api.onrender.com/api';
 
 // ─── For LOCAL development only (uncomment and comment the line above) ───
