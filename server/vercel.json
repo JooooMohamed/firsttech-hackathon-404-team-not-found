@@ -8,11 +8,7 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "dist/serverless.js"
-    },
-    {
-      "src": "/api",
+      "src": "/(.*)",
       "dest": "dist/serverless.js"
     }
   ]
