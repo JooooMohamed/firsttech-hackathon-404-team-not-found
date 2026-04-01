@@ -14,12 +14,12 @@ Repo: `https://github.com/Youssef-ElGhazaly/firsttech-hackathon-404-team-not-fou
 4. Import the `firsttech-hackathon-404-team-not-found` repo
 5. Configure:
 
-| Setting            | Value    |
-| ------------------ | -------- |
-| **Root Directory** | `server` |
-| **Framework**      | Other    |
-| **Build Command**  | `npm run build` |
-| **Output Directory** | (leave empty) |
+| Setting              | Value           |
+| -------------------- | --------------- |
+| **Root Directory**   | `server`        |
+| **Framework**        | Other           |
+| **Build Command**    | `npm run build` |
+| **Output Directory** | (leave empty)   |
 
 6. Add **Environment Variables**:
 
@@ -95,7 +95,7 @@ No local server needed. Works from anywhere with internet.
 Update `mobile/src/constants/index.ts`:
 
 ```typescript
-export const API_BASE_URL = 'https://YOUR-PROJECT-NAME.vercel.app/api';
+export const API_BASE_URL = "https://YOUR-PROJECT-NAME.vercel.app/api";
 ```
 
 Then rebuild: `cd mobile/android && ./gradlew assembleRelease`
@@ -109,7 +109,7 @@ To develop locally, update `mobile/src/constants/index.ts`:
 // export const API_BASE_URL = 'https://easypoints-server.vercel.app/api';
 
 // LOCAL DEV:
-const SERVER_IP = '192.168.1.8';
+const SERVER_IP = "192.168.1.8";
 const SERVER_PORT = 3000;
 export const API_BASE_URL = `http://${SERVER_IP}:${SERVER_PORT}/api`;
 ```
@@ -118,9 +118,9 @@ export const API_BASE_URL = `http://${SERVER_IP}:${SERVER_PORT}/api`;
 
 ## Files for Deployment
 
-| File                      | Purpose                                    |
-| ------------------------- | ------------------------------------------ |
-| `server/vercel.json`      | Vercel routing & build config              |
-| `server/src/serverless.ts`| Serverless entry point (wraps NestJS app)  |
-| `server/Dockerfile`       | (Legacy) Docker build for Render           |
-| `render.yaml`             | (Legacy) Render config                     |
+| File                       | Purpose                                   |
+| -------------------------- | ----------------------------------------- |
+| `server/vercel.json`       | Vercel routing & build config             |
+| `server/src/serverless.ts` | Serverless entry point (wraps NestJS app) |
+| `server/Dockerfile`        | (Legacy) Docker build for Render          |
+| `render.yaml`              | (Legacy) Render config                    |

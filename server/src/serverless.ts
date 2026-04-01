@@ -1,8 +1,8 @@
-import { NestFactory } from '@nestjs/core';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import serverlessExpress from '@vendia/serverless-express';
-import express from 'express';
-import { AppModule } from './app.module';
+import { NestFactory } from "@nestjs/core";
+import { ExpressAdapter } from "@nestjs/platform-express";
+import serverlessExpress from "@vendia/serverless-express";
+import express from "express";
+import { AppModule } from "./app.module";
 
 let cachedServer: any;
 
@@ -14,7 +14,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, adapter);
 
   app.enableCors({ origin: true, credentials: true });
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix("api");
 
   await app.init();
 

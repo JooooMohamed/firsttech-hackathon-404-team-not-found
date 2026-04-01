@@ -9,3 +9,22 @@ android/app/build/
 *.tsbuildinfo
 coverage/
 tmp_assets/
+
+# Dev/demo scripts (not needed in repo)
+DATABASE_POLICY.md
+DEMO_SCRIPT.md
+SCREEN_RECORDING_GUIDE.md
+VIDEO_DEMO_GUIDE.md
+PITCH_DECK.md
+add-missing-programs.js
+demo-reset.sh
+test-all.sh
+render.yaml
+
+# Server utility scripts
+server/inspect-db.js
+server/migrate-atlas.js
+server/seed-atlas.js
+server/add-programs.js
+server/update-descriptions.js
+server/start-server.sh
