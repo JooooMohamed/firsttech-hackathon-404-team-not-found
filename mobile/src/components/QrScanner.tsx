@@ -27,7 +27,9 @@ export const QrScanner: React.FC<QrScannerProps> = ({
 
   const handleRead = useCallback(
     (event: any) => {
-      if (scanned) return;
+      if (scanned) {
+        return;
+      }
       const code =
         event?.nativeEvent?.codeStringValue || event?.nativeEvent?.rawData;
       if (code) {

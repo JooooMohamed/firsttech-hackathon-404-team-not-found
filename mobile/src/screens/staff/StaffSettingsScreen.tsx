@@ -120,7 +120,7 @@ export const StaffSettingsScreen: React.FC<{navigation: any}> = ({}) => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.center}>
-          <Text style={{fontSize: 48, marginBottom: SPACING.md}}>🏪</Text>
+          <Text style={settingsInlineStyles.merchantIcon}>🏪</Text>
           <Text style={{fontSize: FONT_SIZE.md, color: COLORS.textSecondary}}>
             No merchant assigned
           </Text>
@@ -245,6 +245,13 @@ export const StaffSettingsScreen: React.FC<{navigation: any}> = ({}) => {
     </SafeAreaView>
   );
 };
+
+const settingsInlineStyles = StyleSheet.create({
+  merchantIcon: {
+    fontSize: 48,
+    marginBottom: SPACING.md,
+  },
+});
 
 const styles = StyleSheet.create({
   container: {

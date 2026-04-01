@@ -17,7 +17,9 @@ interface LineChartProps {
 }
 
 export const LineChart: React.FC<LineChartProps> = ({data, height = 160}) => {
-  if (data.length < 2) return null;
+  if (data.length < 2) {
+    return null;
+  }
 
   const PADDING_LEFT = 40;
   const PADDING_RIGHT = 16;
@@ -67,7 +69,9 @@ export const LineChart: React.FC<LineChartProps> = ({data, height = 160}) => {
 
   // Format numbers compactly
   const formatNum = (n: number) => {
-    if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
+    if (n >= 1000) {
+      return `${(n / 1000).toFixed(1)}k`;
+    }
     return String(n);
   };
 

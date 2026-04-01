@@ -1,24 +1,19 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
   TextInput as RNTextInput,
   StyleSheet,
   TextInputProps,
-} from "react-native";
-import { COLORS, SPACING, FONT_SIZE } from "../constants";
+} from 'react-native';
+import {COLORS, SPACING, FONT_SIZE} from '../constants';
 
 interface Props extends TextInputProps {
   label: string;
   error?: string;
 }
 
-export const TextInput: React.FC<Props> = ({
-  label,
-  error,
-  style,
-  ...rest
-}) => {
+export const TextInput: React.FC<Props> = ({label, error, style, ...rest}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
@@ -38,7 +33,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: FONT_SIZE.sm,
-    fontWeight: "600",
+    fontWeight: '600',
     color: COLORS.text,
     marginBottom: SPACING.xs,
   },

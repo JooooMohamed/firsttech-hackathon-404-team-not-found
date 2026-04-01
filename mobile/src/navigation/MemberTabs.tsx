@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -151,6 +151,37 @@ const TabIcon: React.FC<{
 export const MemberTabs: React.FC = () => {
   const unreadCount = useNotificationStore(s => s.unreadCount);
 
+  const HomeIcon = useCallback(
+    ({focused}: {focused: boolean}) => (
+      <TabIcon icon="🏠" label="Home" focused={focused} badge={unreadCount} />
+    ),
+    [unreadCount],
+  );
+  const MerchantsIcon = useCallback(
+    ({focused}: {focused: boolean}) => (
+      <TabIcon icon="🏪" label="Merchants" focused={focused} />
+    ),
+    [],
+  );
+  const OffersIcon = useCallback(
+    ({focused}: {focused: boolean}) => (
+      <TabIcon icon="🎯" label="Offers" focused={focused} />
+    ),
+    [],
+  );
+  const ActivityIcon = useCallback(
+    ({focused}: {focused: boolean}) => (
+      <TabIcon icon="📋" label="Activity" focused={focused} />
+    ),
+    [],
+  );
+  const SettingsIcon = useCallback(
+    ({focused}: {focused: boolean}) => (
+      <TabIcon icon="⚙️" label="Settings" focused={focused} />
+    ),
+    [],
+  );
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -161,52 +192,27 @@ export const MemberTabs: React.FC = () => {
       <Tab.Screen
         name="HomeTab"
         component={HomeStack}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <TabIcon
-              icon="🏠"
-              label="Home"
-              focused={focused}
-              badge={unreadCount}
-            />
-          ),
-        }}
+        options={{tabBarIcon: HomeIcon}}
       />
       <Tab.Screen
         name="MerchantsTab"
         component={MerchantsStack}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <TabIcon icon="🏪" label="Merchants" focused={focused} />
-          ),
-        }}
+        options={{tabBarIcon: MerchantsIcon}}
       />
       <Tab.Screen
         name="OffersTab"
         component={OffersStack}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <TabIcon icon="🎯" label="Offers" focused={focused} />
-          ),
-        }}
+        options={{tabBarIcon: OffersIcon}}
       />
       <Tab.Screen
         name="ActivityTab"
         component={ActivityStack}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <TabIcon icon="📋" label="Activity" focused={focused} />
-          ),
-        }}
+        options={{tabBarIcon: ActivityIcon}}
       />
       <Tab.Screen
         name="SettingsTab"
         component={SettingsStack}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <TabIcon icon="⚙️" label="Settings" focused={focused} />
-          ),
-        }}
+        options={{tabBarIcon: SettingsIcon}}
       />
     </Tab.Navigator>
   );

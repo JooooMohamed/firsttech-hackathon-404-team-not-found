@@ -17,16 +17,16 @@ import {Transaction, MerchantStats, DailyStat} from '../../types';
 import {merchantsApi, transactionsApi} from '../../services/api';
 import {COLORS, SPACING, FONT_SIZE} from '../../constants';
 
-export const StaffStatsScreen: React.FC<{navigation: any}> = ({navigation}) => {
+export const StaffStatsScreen: React.FC<{navigation: any}> = ({
+  navigation: _navigation,
+}) => {
   const {user} = useAuthStore();
-  const {merchants, fetchMerchants} = useMerchantStore();
+  const {fetchMerchants} = useMerchantStore();
   const {fetchMerchantTransactions} = useTransactionStore();
   const [recentTxns, setRecentTxns] = useState<Transaction[]>([]);
   const [stats, setStats] = useState<MerchantStats | null>(null);
   const [dailyStats, setDailyStats] = useState<DailyStat[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-
-  const assignedMerchant = merchants.find(m => m._id === user?.merchantId);
 
   const loadData = useCallback(async () => {
     await fetchMerchants();
@@ -44,6 +44,7 @@ export const StaffStatsScreen: React.FC<{navigation: any}> = ({navigation}) => {
         setDailyStats(d);
       } catch (_) {}
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.merchantId]);
 
   useEffect(() => {

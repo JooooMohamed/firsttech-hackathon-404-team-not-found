@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -89,42 +89,51 @@ const TabIcon: React.FC<{icon: string; label: string; focused: boolean}> = ({
   </View>
 );
 
-export const StaffTabs: React.FC = () => (
-  <Tab.Navigator
-    screenOptions={{
-      headerShown: false,
-      tabBarShowLabel: false,
-      tabBarStyle: tabStyles.bar,
-    }}>
-    <Tab.Screen
-      name="HomeTab"
-      component={HomeStack}
-      options={{
-        tabBarIcon: ({focused}) => (
-          <TabIcon icon="🏠" label="Home" focused={focused} />
-        ),
-      }}
-    />
-    <Tab.Screen
-      name="StatsTab"
-      component={StatsStack}
-      options={{
-        tabBarIcon: ({focused}) => (
-          <TabIcon icon="📊" label="Stats" focused={focused} />
-        ),
-      }}
-    />
-    <Tab.Screen
-      name="SettingsTab"
-      component={SettingsStack}
-      options={{
-        tabBarIcon: ({focused}) => (
-          <TabIcon icon="⚙️" label="Settings" focused={focused} />
-        ),
-      }}
-    />
-  </Tab.Navigator>
-);
+export const StaffTabs: React.FC = () => {
+  const HomeIcon = useCallback(
+    ({focused}: {focused: boolean}) => (
+      <TabIcon icon="🏠" label="Home" focused={focused} />
+    ),
+    [],
+  );
+  const StatsIcon = useCallback(
+    ({focused}: {focused: boolean}) => (
+      <TabIcon icon="📊" label="Stats" focused={focused} />
+    ),
+    [],
+  );
+  const SettingsIcon = useCallback(
+    ({focused}: {focused: boolean}) => (
+      <TabIcon icon="⚙️" label="Settings" focused={focused} />
+    ),
+    [],
+  );
+
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarShowLabel: false,
+        tabBarStyle: tabStyles.bar,
+      }}>
+      <Tab.Screen
+        name="HomeTab"
+        component={HomeStack}
+        options={{tabBarIcon: HomeIcon}}
+      />
+      <Tab.Screen
+        name="StatsTab"
+        component={StatsStack}
+        options={{tabBarIcon: StatsIcon}}
+      />
+      <Tab.Screen
+        name="SettingsTab"
+        component={SettingsStack}
+        options={{tabBarIcon: SettingsIcon}}
+      />
+    </Tab.Navigator>
+  );
+};
 
 const tabStyles = StyleSheet.create({
   bar: {

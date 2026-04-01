@@ -1,5 +1,3 @@
-import {Platform} from 'react-native';
-
 // ─── Server URL ──────────────────────────────────────────
 // PRODUCTION: Points to the deployed Render server (works from anywhere).
 // The server connects to MongoDB Atlas — all data is live.

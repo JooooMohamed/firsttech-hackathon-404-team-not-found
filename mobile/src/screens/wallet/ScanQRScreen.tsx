@@ -59,7 +59,9 @@ export const ScanQRScreen: React.FC<{navigation: any; route: any}> = ({
   };
 
   const handleConfirmEarn = async () => {
-    if (!sessionData) return;
+    if (!sessionData) {
+      return;
+    }
     try {
       const merchant =
         typeof sessionData.merchantId === 'object'
