@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -18,15 +18,17 @@ import {COLORS, SPACING, FONT_SIZE} from '../../constants';
 
 export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const {login, isLoading} = useAuthStore();
+  const [loginError, setLoginError] = useState('');
 
   const {
     control,
     handleSubmit,
     setValue,
-    formState: {errors},
+    formState: {errors, isValid},
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {email: '', password: ''},
+    mode: 'onChange',
   });
 
   const fillDemo = (email: string) => {
@@ -35,18 +37,15 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
   };
 
   const onSubmit = async (data: LoginFormData) => {
+    setLoginError('');
     try {
       await login(data.email, data.password);
     } catch (e: any) {
       const status = e?.response?.status;
       if (status === 401 || status === 404) {
-        Alert.alert(
-          'Login Failed',
-          'Incorrect email or password. Please try again.',
-        );
+        setLoginError('Incorrect email or password. Please try again.');
       } else {
-        Alert.alert(
-          'Login Failed',
+        setLoginError(
           'Something went wrong. Please check your connection and try again.',
         );
       }
@@ -98,11 +97,18 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
             )}
           />
 
+          {loginError ? (
+            <View style={styles.errorBox}>
+              <Text style={styles.errorText}>{loginError}</Text>
+            </View>
+          ) : null}
+
           <Button
             title="Sign In"
             onPress={handleSubmit(onSubmit)}
             loading={isLoading}
-            style={{marginTop: SPACING.md}}
+            disabled={!isValid}
+            style={{marginTop: SPACING.md, opacity: isValid ? 1 : 0.5}}
           />
         </View>
 
@@ -179,6 +185,20 @@ const styles = StyleSheet.create({
   },
   form: {
     marginBottom: SPACING.lg,
+  },
+  errorBox: {
+    backgroundColor: COLORS.error + '12',
+    borderRadius: 10,
+    padding: SPACING.sm + 2,
+    marginTop: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.error + '30',
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   hint: {
     fontSize: FONT_SIZE.xs,

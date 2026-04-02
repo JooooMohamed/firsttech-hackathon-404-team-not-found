@@ -168,12 +168,13 @@ const styles = StyleSheet.create({
   pillRow: {
     flexDirection: 'row',
     paddingHorizontal: SPACING.lg,
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.md,
+    paddingBottom: 2,
     gap: SPACING.xs,
   },
   pill: {
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs + 2,
+    paddingVertical: SPACING.sm,
     borderRadius: 20,
     backgroundColor: COLORS.surface,
     borderWidth: 1,
@@ -184,9 +185,10 @@ const styles = StyleSheet.create({
     borderColor: COLORS.primary,
   },
   pillText: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: FONT_SIZE.sm,
     fontWeight: '600',
     color: COLORS.textSecondary,
+    lineHeight: FONT_SIZE.sm + 2,
   },
   pillTextActive: {
     color: '#FFF',

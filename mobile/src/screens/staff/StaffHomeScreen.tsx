@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
   },
   scanInputRow: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     gap: SPACING.sm,
     marginBottom: SPACING.sm,
   },
@@ -387,7 +387,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
   },
   scanCameraBtnText: {
     fontSize: 22,

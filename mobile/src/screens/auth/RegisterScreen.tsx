@@ -22,10 +22,11 @@ export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const {
     control,
     handleSubmit,
-    formState: {errors},
+    formState: {errors, isValid},
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {name: '', email: '', phone: '', password: ''},
+    mode: 'onChange',
   });
 
   const onSubmit = async (data: RegisterFormData) => {
@@ -123,7 +124,8 @@ export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
             title="Create Account"
             onPress={handleSubmit(onSubmit)}
             loading={isLoading}
-            style={{marginTop: SPACING.md}}
+            disabled={!isValid}
+            style={{marginTop: SPACING.md, opacity: isValid ? 1 : 0.5}}
           />
         </View>
 

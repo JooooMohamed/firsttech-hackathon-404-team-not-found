@@ -16,8 +16,8 @@ const {width} = Dimensions.get('window');
 const SLIDES = [
   {
     icon: '💳',
-    title: 'One Wallet, All Rewards',
-    desc: 'View all your loyalty balances across UAE programs in a single, beautiful dashboard.',
+    title: 'Your Loyalty Wallet',
+    desc: 'All your loyalty points in one place — earn, track, and redeem across UAE merchants seamlessly.',
     color: COLORS.primary,
   },
   {

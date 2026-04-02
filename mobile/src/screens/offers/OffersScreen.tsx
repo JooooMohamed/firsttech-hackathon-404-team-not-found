@@ -52,10 +52,10 @@ export const OffersScreen: React.FC = () => {
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     if (days > 0) {
-      return `${days}d left`;
+      return `${days} ${days === 1 ? 'day' : 'days'} left`;
     }
     if (hours > 0) {
-      return `${hours}h left`;
+      return `${hours} ${hours === 1 ? 'hour' : 'hours'} left`;
     }
     return 'Ending soon';
   };

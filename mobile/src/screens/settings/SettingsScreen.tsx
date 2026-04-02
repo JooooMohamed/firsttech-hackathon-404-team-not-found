@@ -170,9 +170,29 @@ export const SettingsScreen: React.FC<{navigation: any}> = ({}) => {
 
             <View style={styles.infoCard}>
               <Text style={styles.infoLabel}>Data consent</Text>
-              <Text style={[styles.infoValue, {color: COLORS.success}]}>
-                {user?.consentGiven ? '✓ Given' : '✗ Not given'}
-              </Text>
+              <View style={{alignItems: 'flex-end'}}>
+                <Text
+                  style={[
+                    styles.infoValue,
+                    {color: user?.consentGiven ? COLORS.success : COLORS.error},
+                  ]}>
+                  {user?.consentGiven ? '✓ Approved' : '✗ Not given'}
+                </Text>
+                {user?.consentGiven && user?.consentGivenAt ? (
+                  <Text
+                    style={{
+                      fontSize: FONT_SIZE.xs,
+                      color: COLORS.textSecondary,
+                      marginTop: 2,
+                    }}>
+                    {new Date(user.consentGivenAt).toLocaleDateString('en-AE', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </Text>
+                ) : null}
+              </View>
             </View>
           </View>
 
