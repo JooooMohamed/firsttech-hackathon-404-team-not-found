@@ -29,3 +29,9 @@ server/add-programs.js
 server/update-descriptions.js
 server/start-server.sh
 EasyPoints-release.apk
+
+# Demo docs
+demo-script.md
+pitch-deck.md
+screen-recording-guide.md
+video-demo-guide.md
