@@ -19,6 +19,7 @@ export class UsersService {
           id,
           {
             consentGiven: false,
+            consentGivenAt: null,
             name: "Deleted User",
             phone: "",
           },
@@ -27,7 +28,11 @@ export class UsersService {
         .select("-password");
     }
     return this.userModel
-      .findByIdAndUpdate(id, { consentGiven }, { new: true })
+      .findByIdAndUpdate(
+        id,
+        { consentGiven, consentGivenAt: new Date() },
+        { new: true },
+      )
       .select("-password");
   }
 

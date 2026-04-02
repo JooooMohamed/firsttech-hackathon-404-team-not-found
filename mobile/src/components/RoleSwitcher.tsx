@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Modal } from "react-native";
-import { COLORS, SPACING, FONT_SIZE } from "../constants";
-import { ActiveRole } from "../types";
-import { useAuthStore } from "../stores";
+import React from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Modal} from 'react-native';
+import {COLORS, SPACING, FONT_SIZE} from '../constants';
+import {ActiveRole} from '../types';
+import {useAuthStore} from '../stores';
 
 interface Props {
   visible: boolean;
@@ -11,27 +11,32 @@ interface Props {
 
 const ROLE_INFO: Record<
   ActiveRole,
-  { label: string; icon: string; desc: string }
+  {label: string; icon: string; desc: string}
 > = {
   member: {
-    label: "Member",
-    icon: "👤",
-    desc: "View wallet, earn & redeem points",
+    label: 'Member',
+    icon: '👤',
+    desc: 'View wallet, earn & redeem points',
   },
   staff: {
-    label: "Staff",
-    icon: "🏷️",
-    desc: "Issue & validate points for customers",
+    label: 'Staff',
+    icon: '🏷️',
+    desc: 'Issue & validate points for customers',
   },
   admin: {
-    label: "Admin",
-    icon: "⚙️",
-    desc: "Manage merchant settings & view stats",
+    label: 'Admin',
+    icon: '\u2699\uFE0F',
+    desc: 'Manage merchant settings & view stats',
+  },
+  merchant: {
+    label: 'Merchant',
+    icon: '\uD83C\uDFEA',
+    desc: 'Manage your business, offers & loyalty',
   },
 };
 
-export const RoleSwitcher: React.FC<Props> = ({ visible, onClose }) => {
-  const { user, activeRole, switchRole } = useAuthStore();
+export const RoleSwitcher: React.FC<Props> = ({visible, onClose}) => {
+  const {user, activeRole, switchRole} = useAuthStore();
 
   if (!user) return null;
 
@@ -41,7 +46,7 @@ export const RoleSwitcher: React.FC<Props> = ({ visible, onClose }) => {
         <View style={styles.sheet}>
           <Text style={styles.title}>Switch Mode</Text>
 
-          {user.roles.map((role) => {
+          {user.roles.map(role => {
             const info = ROLE_INFO[role as ActiveRole];
             const isActive = role === activeRole;
             return (
@@ -51,16 +56,14 @@ export const RoleSwitcher: React.FC<Props> = ({ visible, onClose }) => {
                 onPress={() => {
                   switchRole(role as ActiveRole);
                   onClose();
-                }}
-              >
+                }}>
                 <Text style={styles.optionIcon}>{info.icon}</Text>
                 <View style={styles.optionInfo}>
                   <Text
                     style={[
                       styles.optionLabel,
                       isActive && styles.optionLabelActive,
-                    ]}
-                  >
+                    ]}>
                     {info.label}
                   </Text>
                   <Text style={styles.optionDesc}>{info.desc}</Text>
@@ -82,8 +85,8 @@ export const RoleSwitcher: React.FC<Props> = ({ visible, onClose }) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   sheet: {
     backgroundColor: COLORS.surface,
@@ -94,14 +97,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: FONT_SIZE.xl,
-    fontWeight: "800",
+    fontWeight: '800',
     color: COLORS.text,
     marginBottom: SPACING.lg,
-    textAlign: "center",
+    textAlign: 'center',
   },
   option: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: SPACING.md,
     borderRadius: 12,
     marginBottom: SPACING.sm,
@@ -110,7 +113,7 @@ const styles = StyleSheet.create({
   },
   optionActive: {
     borderColor: COLORS.primary,
-    backgroundColor: COLORS.primary + "08",
+    backgroundColor: COLORS.primary + '08',
   },
   optionIcon: {
     fontSize: 28,
@@ -121,7 +124,7 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     fontSize: FONT_SIZE.md,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.text,
   },
   optionLabelActive: {
@@ -135,16 +138,16 @@ const styles = StyleSheet.create({
   check: {
     fontSize: 20,
     color: COLORS.primary,
-    fontWeight: "700",
+    fontWeight: '700',
   },
   cancel: {
     marginTop: SPACING.md,
-    alignItems: "center",
+    alignItems: 'center',
     padding: SPACING.md,
   },
   cancelText: {
     fontSize: FONT_SIZE.md,
     color: COLORS.textSecondary,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

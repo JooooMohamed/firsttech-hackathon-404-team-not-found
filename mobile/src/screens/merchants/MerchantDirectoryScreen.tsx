@@ -8,6 +8,7 @@ import {
   RefreshControl,
   TextInput,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import {useMerchantStore} from '../../stores';
 import {MerchantCard, EmptyState} from '../../components';
@@ -45,14 +46,7 @@ export const MerchantDirectoryScreen: React.FC<{navigation: any}> = ({
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <TouchableOpacity
-            onPress={() => navigation.getParent()?.navigate('HomeTab')}
-            style={styles.backBtn}>
-            <Text style={styles.backArrow}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>Merchant Directory</Text>
-        </View>
+        <Text style={styles.title}>Merchant Directory</Text>
         <Text style={styles.subtitle}>Earn & redeem EasyPoints</Text>
       </View>
 
@@ -69,7 +63,10 @@ export const MerchantDirectoryScreen: React.FC<{navigation: any}> = ({
 
       {/* Category Pills */}
       {categories.length > 0 && (
-        <View style={styles.pillRow}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.pillRow}>
           <TouchableOpacity
             style={[styles.pill, !selectedCategory && styles.pillActive]}
             onPress={() => setSelectedCategory(null)}>
@@ -100,7 +97,7 @@ export const MerchantDirectoryScreen: React.FC<{navigation: any}> = ({
               </Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
       )}
 
       <FlatList

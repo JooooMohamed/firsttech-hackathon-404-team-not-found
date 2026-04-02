@@ -26,6 +26,9 @@ export class User {
   @Prop({ default: false })
   consentGiven: boolean;
 
+  @Prop({ type: Date, default: null })
+  consentGivenAt: Date | null;
+
   @Prop({ unique: true, sparse: true })
   referralCode: string;
 }

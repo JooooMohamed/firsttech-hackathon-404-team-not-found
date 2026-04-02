@@ -183,10 +183,6 @@ export const SettingsScreen: React.FC<{navigation: any}> = ({}) => {
               <Text style={styles.infoLabel}>App version</Text>
               <Text style={styles.infoValue}>1.0.0 (Hackathon MVP)</Text>
             </View>
-            <View style={styles.infoCard}>
-              <Text style={styles.infoLabel}>Platform</Text>
-              <Text style={styles.infoValue}>EasyPoints UAE</Text>
-            </View>
           </View>
 
           {/* Actions */}

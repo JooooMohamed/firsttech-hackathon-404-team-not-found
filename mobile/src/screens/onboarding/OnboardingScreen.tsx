@@ -16,20 +16,20 @@ const {width} = Dimensions.get('window');
 const SLIDES = [
   {
     icon: '💳',
-    title: 'Your Unified Wallet',
-    desc: 'See all your loyalty balances from UAE programs in one beautiful dashboard.',
+    title: 'One Wallet, All Rewards',
+    desc: 'View all your loyalty balances across UAE programs in a single, beautiful dashboard.',
     color: COLORS.primary,
   },
   {
     icon: '🔗',
-    title: 'Link Programs',
-    desc: 'Connect your existing loyalty memberships instantly. No cards to carry — everything lives in your phone.',
+    title: 'Connect Your Programs',
+    desc: 'Link your existing memberships in seconds. No cards to carry — everything lives in your phone.',
     color: '#00C9A7',
   },
   {
     icon: '⚡',
-    title: 'Earn & Redeem at SMEs',
-    desc: 'Visit any partner merchant, show your QR code, and earn or spend EasyPoints seamlessly.',
+    title: 'Earn & Redeem Everywhere',
+    desc: 'Show your QR code at any partner merchant to earn or spend EasyPoints instantly.',
     color: '#F59E0B',
   },
 ];

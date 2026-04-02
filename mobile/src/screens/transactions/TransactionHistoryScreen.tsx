@@ -84,24 +84,19 @@ export const TransactionHistoryScreen: React.FC<{navigation?: any}> = ({
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <TouchableOpacity
-            onPress={() => nav.getParent()?.navigate('HomeTab')}
-            style={styles.backBtn}>
-            <Text style={styles.backArrow}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>Transaction History</Text>
-        </View>
+        <Text style={styles.title}>Transaction History</Text>
         <View style={styles.subHeaderRow}>
           <Text style={styles.count}>{filtered.length} transactions</Text>
-          <TouchableOpacity
-            onPress={handleExportCsv}
-            disabled={exporting}
-            style={styles.exportBtn}>
-            <Text style={styles.exportBtnText}>
-              {exporting ? '⏳...' : '📊 Export CSV'}
-            </Text>
-          </TouchableOpacity>
+          {filtered.length > 0 && (
+            <TouchableOpacity
+              onPress={handleExportCsv}
+              disabled={exporting}
+              style={styles.exportBtn}>
+              <Text style={styles.exportBtnText}>
+                {exporting ? '⏳...' : '📊 Export CSV'}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 

@@ -45,6 +45,7 @@ export const RootNavigator: React.FC = () => {
   const renderStack = () => {
     switch (activeRole) {
       case 'staff':
+      case 'merchant':
         return <StaffStack />;
       case 'admin':
         return <AdminStack />;

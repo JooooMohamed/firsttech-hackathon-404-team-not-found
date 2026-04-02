@@ -274,13 +274,45 @@ export const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
               <View style={st.heroSubRow}>
                 <View style={st.expiryBadge}>
                   <Text style={st.expiryText}>
-                    {'\u23F3'} Points don't expire
+                    {'\u23F3'} Points expire after 90 days of inactivity
                   </Text>
                 </View>
                 <Text style={st.heroAed}>
                   {'\u2248'} AED {epAed.toFixed(0)}
                 </Text>
               </View>
+            </View>
+
+            {/* Earn & Redeem CTAs */}
+            <View style={st.ctaRow}>
+              <TouchableOpacity
+                style={[st.ctaBtn, {backgroundColor: COLORS.earn}]}
+                activeOpacity={0.7}
+                onPress={() =>
+                  navigation.getParent()?.navigate('MerchantsTab')
+                }>
+                <Text style={st.ctaIcon}>{'\u{1F4B0}'}</Text>
+                <Text style={st.ctaLabel}>Earn</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  st.ctaBtn,
+                  {backgroundColor: COLORS.redeem || '#FF6B6B'},
+                ]}
+                activeOpacity={0.7}
+                onPress={() =>
+                  navigation.getParent()?.navigate('MerchantsTab')
+                }>
+                <Text style={st.ctaIcon}>{'\uD83C\uDF81'}</Text>
+                <Text style={st.ctaLabel}>Redeem</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[st.ctaBtn, {backgroundColor: COLORS.primary}]}
+                activeOpacity={0.7}
+                onPress={() => navigation.navigate('ScanQR')}>
+                <Text style={st.ctaIcon}>{'\uD83D\uDCF7'}</Text>
+                <Text style={st.ctaLabel}>Scan QR</Text>
+              </TouchableOpacity>
             </View>
 
             {/* Wallet Breakdown */}
@@ -404,7 +436,7 @@ export const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
                       </Text>
                       {item.crossSmeRedemption && (
                         <Text style={st.crossBadge}>
-                          {'\u{1F517}'} Cross-SME
+                          {'\u{1F517}'} Cross-Brand
                         </Text>
                       )}
                     </TouchableOpacity>
@@ -469,7 +501,7 @@ export const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
             {/* Quick Actions */}
             <Text style={st.sectionTitle}>Quick Actions</Text>
 
-            {!user?.merchantId && (
+            {!user?.merchantId && activeRole === 'admin' && (
               <TouchableOpacity
                 style={st.onboardRow}
                 onPress={() => navigation.navigate('MerchantOnboarding')}
@@ -480,7 +512,7 @@ export const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
                 <View style={st.actionFlex}>
                   <Text style={st.actionLabel}>Register Your Business</Text>
                   <Text style={st.actionDesc}>
-                    Start your own SME loyalty with EasyPoints
+                    Start your own loyalty program with EasyPoints
                   </Text>
                 </View>
                 <Text style={st.actionArrow}>{'\u203A'}</Text>
@@ -519,21 +551,6 @@ export const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
               </View>
               <Text style={st.actionArrow}>{'\u203A'}</Text>
             </TouchableOpacity>
-
-            {/* Role switch */}
-            {(user?.roles?.length || 0) > 1 && (
-              <View style={st.bottomActions}>
-                <TouchableOpacity
-                  style={st.switchBtn}
-                  onPress={() => {
-                    Vibration.vibrate(10);
-                    setShowRoleSwitcher(true);
-                  }}>
-                  <Text style={st.actionIcon}>{'\u{1F504}'}</Text>
-                  <Text style={st.switchLabel}>Switch Role</Text>
-                </TouchableOpacity>
-              </View>
-            )}
           </Animated.View>
         )}
       </ScrollView>
@@ -705,6 +722,27 @@ const st = StyleSheet.create({
     color: 'rgba(255,255,255,0.6)',
     fontSize: FONT_SIZE.xs,
     fontWeight: '600',
+  },
+  ctaRow: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    marginBottom: SPACING.md,
+  },
+  ctaBtn: {
+    flex: 1,
+    borderRadius: 14,
+    paddingVertical: SPACING.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ctaIcon: {
+    fontSize: 22,
+    marginBottom: 4,
+  },
+  ctaLabel: {
+    color: '#FFFFFF',
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '700',
   },
   sectionTitle: {
     fontSize: FONT_SIZE.lg,

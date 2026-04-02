@@ -186,17 +186,17 @@ export const MerchantProfileScreen: React.FC<{
           )}
         </TouchableOpacity>
 
-        {/* Cross-SME Explainer */}
+        {/* Cross-Brand Explainer */}
         {merchant.crossSmeRedemption ? (
           <View style={styles.crossExplainer}>
             <View style={styles.crossExplainerHeader}>
               <Text style={styles.crossExplainerIcon}>{'\u{1F30D}'}</Text>
               <Text style={styles.crossExplainerTitle}>
-                Cross-SME Redemption
+                Cross-Brand Redemption
               </Text>
             </View>
             <Text style={styles.crossExplainerBody}>
-              This merchant accepts EasyPoints earned at any participating SME
+              This merchant accepts EasyPoints earned at any participating brand
               in the network. Spend your combined balance here!
             </Text>
             <View style={styles.crossExplainerBadge}>
@@ -255,14 +255,24 @@ export const MerchantProfileScreen: React.FC<{
 
           {merchant.redemptionEnabled && (
             <TouchableOpacity
-              style={styles.redeemBtn}
+              style={[
+                styles.redeemBtn,
+                easyPointsBalance === 0 && styles.redeemBtnDisabled,
+              ]}
               onPress={handleRedeem}
-              activeOpacity={0.7}>
+              activeOpacity={0.7}
+              disabled={easyPointsBalance === 0}>
               <Text style={styles.redeemBtnIcon}>🎁</Text>
               <View style={styles.redeemBtnContent}>
-                <Text style={styles.redeemBtnTitle}>Redeem Points Here</Text>
+                <Text style={styles.redeemBtnTitle}>
+                  {easyPointsBalance === 0
+                    ? 'No Points to Redeem'
+                    : 'Redeem Points Here'}
+                </Text>
                 <Text style={styles.redeemBtnDesc}>
-                  Spend EP to get discounts at this merchant
+                  {easyPointsBalance === 0
+                    ? 'Earn points first by making purchases'
+                    : 'Spend EP to get discounts at this merchant'}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -474,6 +484,10 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.xs,
     color: 'rgba(255,255,255,0.7)',
     marginTop: 2,
+  },
+  redeemBtnDisabled: {
+    backgroundColor: COLORS.textSecondary,
+    opacity: 0.5,
   },
   crossExplainer: {
     backgroundColor: COLORS.secondary + '06',

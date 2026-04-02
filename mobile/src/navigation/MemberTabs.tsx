@@ -113,6 +113,11 @@ const OffersStack = () => (
       component={OffersScreen}
       options={{headerShown: false}}
     />
+    <Stack.Screen
+      name="MerchantProfile"
+      component={MerchantProfileScreen}
+      options={{title: 'Merchant'}}
+    />
   </Stack.Navigator>
 );
 

@@ -38,10 +38,18 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
     try {
       await login(data.email, data.password);
     } catch (e: any) {
-      Alert.alert(
-        'Login Failed',
-        e?.response?.data?.message || 'Invalid credentials',
-      );
+      const status = e?.response?.status;
+      if (status === 401 || status === 404) {
+        Alert.alert(
+          'Login Failed',
+          'Incorrect email or password. Please try again.',
+        );
+      } else {
+        Alert.alert(
+          'Login Failed',
+          'Something went wrong. Please check your connection and try again.',
+        );
+      }
     }
   };
 

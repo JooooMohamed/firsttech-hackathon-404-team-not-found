@@ -32,10 +32,18 @@ export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
     try {
       await register(data);
     } catch (e: any) {
-      Alert.alert(
-        'Registration Failed',
-        e?.response?.data?.message || 'Could not create account',
-      );
+      const msg = e?.response?.data?.message;
+      if (msg?.toLowerCase()?.includes('already')) {
+        Alert.alert(
+          'Registration Failed',
+          'An account with this email already exists. Please sign in instead.',
+        );
+      } else {
+        Alert.alert(
+          'Registration Failed',
+          msg || 'Could not create account. Please try again.',
+        );
+      }
     }
   };
 
@@ -102,7 +110,7 @@ export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
             render={({field: {onChange, value}}) => (
               <TextInput
                 label="Password"
-                placeholder="Min 4 characters"
+                placeholder="Min 6 characters"
                 value={value}
                 onChangeText={onChange}
                 secureTextEntry

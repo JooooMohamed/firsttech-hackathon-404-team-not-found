@@ -4,14 +4,15 @@ export interface User {
   name: string;
   email: string;
   phone: string;
-  roles: ('member' | 'staff' | 'admin')[];
+  roles: ('member' | 'staff' | 'admin' | 'merchant')[];
   merchantId: string | null;
   consentGiven: boolean;
+  consentGivenAt?: string | null;
   referralCode?: string;
   createdAt: string;
 }
 
-export type ActiveRole = 'member' | 'staff' | 'admin';
+export type ActiveRole = 'member' | 'staff' | 'admin' | 'merchant';
 
 // ── Merchant ──────────────────────────────────────────
 export interface Merchant {

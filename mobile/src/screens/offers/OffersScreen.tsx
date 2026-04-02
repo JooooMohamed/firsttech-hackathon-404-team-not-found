@@ -63,14 +63,7 @@ export const OffersScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <TouchableOpacity
-            onPress={() => nav.getParent()?.navigate('HomeTab')}
-            style={styles.backBtn}>
-            <Text style={styles.backArrow}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>🎯 Offers & Promotions</Text>
-        </View>
+        <Text style={styles.title}>{'\uD83C\uDFAF'} Offers & Promotions</Text>
         <Text style={styles.subtitle}>Active deals from partner merchants</Text>
       </View>
       <FlatList
@@ -87,8 +80,19 @@ export const OffersScreen: React.FC = () => {
           const isNew =
             Date.now() - new Date(item.createdAt || item.startsAt).getTime() <
             24 * 60 * 60 * 1000;
+          const merchantId =
+            typeof item.merchantId === 'object'
+              ? (item.merchantId as any)._id
+              : item.merchantId;
           return (
-            <View style={[styles.offerCard, {borderLeftColor: color}]}>
+            <TouchableOpacity
+              style={[styles.offerCard, {borderLeftColor: color}]}
+              activeOpacity={0.7}
+              onPress={() => {
+                if (merchantId) {
+                  nav.navigate('MerchantProfile', {merchantId});
+                }
+              }}>
               {isNew && (
                 <View style={styles.newBadge}>
                   <Text style={styles.newBadgeText}>{'\u2728'} NEW</Text>
@@ -116,16 +120,7 @@ export const OffersScreen: React.FC = () => {
               {item.description ? (
                 <Text style={styles.offerDesc}>{item.description}</Text>
               ) : null}
-              <View style={[styles.typeBadge, {backgroundColor: color + '12'}]}>
-                <Text style={[styles.typeText, {color}]}>
-                  {item.type === 'bonus'
-                    ? `${item.value}x Points`
-                    : item.type === 'discount'
-                    ? `${item.value}% Off`
-                    : `Free at ${item.value} EP`}
-                </Text>
-              </View>
-            </View>
+            </TouchableOpacity>
           );
         }}
         ListEmptyComponent={
@@ -154,10 +149,10 @@ const styles = StyleSheet.create({
   list: {padding: SPACING.lg, paddingTop: SPACING.sm},
   offerCard: {
     backgroundColor: COLORS.surface,
-    borderRadius: 14,
-    padding: SPACING.md,
-    marginBottom: SPACING.md,
-    borderLeftWidth: 4,
+    borderRadius: 12,
+    padding: SPACING.sm + 4,
+    marginBottom: SPACING.sm + 2,
+    borderLeftWidth: 3,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.05,
@@ -168,7 +163,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  offerIcon: {fontSize: 32, marginRight: SPACING.sm},
+  offerIcon: {fontSize: 24, marginRight: SPACING.sm},
   offerInfo: {flex: 1},
   offerTitle: {
     fontSize: FONT_SIZE.md,
