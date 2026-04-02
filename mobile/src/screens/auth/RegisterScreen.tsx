@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
   TouchableOpacity,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
@@ -18,35 +17,54 @@ import {COLORS, SPACING, FONT_SIZE} from '../../constants';
 
 export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const {register, isLoading} = useAuthStore();
+  const [signupError, setSignupError] = useState('');
 
   const {
     control,
     handleSubmit,
-    formState: {errors, isValid},
+    watch,
+    formState: {errors, isValid, isDirty},
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {name: '', email: '', phone: '', password: ''},
-    mode: 'onChange',
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      password: '',
+      confirmPassword: '',
+    },
+    mode: 'onTouched',
   });
 
+  // Clear server error when user edits any field
+  const watchedFields = watch();
+  useEffect(() => {
+    if (signupError) setSignupError('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    watchedFields.name,
+    watchedFields.email,
+    watchedFields.password,
+    watchedFields.confirmPassword,
+  ]);
+
   const onSubmit = async (data: RegisterFormData) => {
+    setSignupError('');
     try {
       await register(data);
     } catch (e: any) {
       const msg = e?.response?.data?.message;
       if (msg?.toLowerCase()?.includes('already')) {
-        Alert.alert(
-          'Registration Failed',
+        setSignupError(
           'An account with this email already exists. Please sign in instead.',
         );
       } else {
-        Alert.alert(
-          'Registration Failed',
-          msg || 'Could not create account. Please try again.',
-        );
+        setSignupError(msg || 'Could not create account. Please try again.');
       }
     }
   };
+
+  const canSubmit = isValid && isDirty;
 
   return (
     <KeyboardAvoidingView
@@ -111,7 +129,7 @@ export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
             render={({field: {onChange, value}}) => (
               <TextInput
                 label="Password"
-                placeholder="Min 6 characters"
+                placeholder="Min 6 chars, 1 uppercase, 1 number"
                 value={value}
                 onChangeText={onChange}
                 secureTextEntry
@@ -120,12 +138,33 @@ export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
             )}
           />
 
+          <Controller
+            control={control}
+            name="confirmPassword"
+            render={({field: {onChange, value}}) => (
+              <TextInput
+                label="Confirm Password"
+                placeholder="Re-enter your password"
+                value={value}
+                onChangeText={onChange}
+                secureTextEntry
+                error={errors.confirmPassword?.message}
+              />
+            )}
+          />
+
+          {signupError ? (
+            <View style={styles.errorBox}>
+              <Text style={styles.errorText}>{signupError}</Text>
+            </View>
+          ) : null}
+
           <Button
             title="Create Account"
             onPress={handleSubmit(onSubmit)}
             loading={isLoading}
-            disabled={!isValid}
-            style={{marginTop: SPACING.md, opacity: isValid ? 1 : 0.5}}
+            disabled={!canSubmit}
+            style={{marginTop: SPACING.md}}
           />
         </View>
 
@@ -172,6 +211,20 @@ const styles = StyleSheet.create({
   },
   form: {
     marginBottom: SPACING.lg,
+  },
+  errorBox: {
+    backgroundColor: COLORS.error + '12',
+    borderRadius: 10,
+    padding: SPACING.sm + 2,
+    marginTop: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.error + '30',
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   loginLink: {
     alignItems: 'center',

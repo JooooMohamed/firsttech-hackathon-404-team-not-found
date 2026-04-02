@@ -6,6 +6,7 @@ import {
   FlatList,
   SafeAreaView,
   RefreshControl,
+  ScrollView,
   TouchableOpacity,
   Vibration,
   Alert,
@@ -122,7 +123,11 @@ export const TransactionHistoryScreen: React.FC<{navigation?: any}> = ({
       </View>
 
       {/* Date range pills */}
-      <View style={styles.filterRow}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{flexGrow: 0}}
+        contentContainerStyle={styles.filterRow}>
         {DATE_RANGES.map(d => (
           <TouchableOpacity
             key={d.key}
@@ -143,7 +148,7 @@ export const TransactionHistoryScreen: React.FC<{navigation?: any}> = ({
             </Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
 
       <FlatList
         data={filtered}
@@ -205,6 +210,7 @@ const styles = StyleSheet.create({
   filterRow: {
     flexDirection: 'row',
     paddingHorizontal: SPACING.lg,
+    paddingRight: SPACING.xl,
     gap: SPACING.sm,
     marginBottom: SPACING.sm,
   },

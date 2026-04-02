@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
   TouchableOpacity,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
@@ -24,16 +23,25 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
     control,
     handleSubmit,
     setValue,
-    formState: {errors, isValid},
+    watch,
+    formState: {errors, isValid, isDirty},
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {email: '', password: ''},
-    mode: 'onChange',
+    mode: 'onTouched',
   });
 
+  // Clear server error when user edits any field
+  const watchedFields = watch();
+  useEffect(() => {
+    if (loginError) setLoginError('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedFields.email, watchedFields.password]);
+
   const fillDemo = (email: string) => {
-    setValue('email', email, {shouldValidate: true});
-    setValue('password', 'demo123', {shouldValidate: true});
+    setValue('email', email, {shouldValidate: true, shouldDirty: true});
+    setValue('password', 'demo123', {shouldValidate: true, shouldDirty: true});
+    setLoginError('');
   };
 
   const onSubmit = async (data: LoginFormData) => {
@@ -43,7 +51,7 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
     } catch (e: any) {
       const status = e?.response?.status;
       if (status === 401 || status === 404) {
-        setLoginError('Incorrect email or password. Please try again.');
+        setLoginError('Invalid email or password. Please try again.');
       } else {
         setLoginError(
           'Something went wrong. Please check your connection and try again.',
@@ -51,6 +59,8 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
       }
     }
   };
+
+  const canSubmit = isValid && isDirty;
 
   return (
     <KeyboardAvoidingView
@@ -107,8 +117,8 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
             title="Sign In"
             onPress={handleSubmit(onSubmit)}
             loading={isLoading}
-            disabled={!isValid}
-            style={{marginTop: SPACING.md, opacity: isValid ? 1 : 0.5}}
+            disabled={!canSubmit}
+            style={{marginTop: SPACING.md}}
           />
         </View>
 
