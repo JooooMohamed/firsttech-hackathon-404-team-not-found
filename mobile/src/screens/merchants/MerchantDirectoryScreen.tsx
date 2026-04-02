@@ -66,6 +66,7 @@ export const MerchantDirectoryScreen: React.FC<{navigation: any}> = ({
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
+          style={{flexGrow: 0}}
           contentContainerStyle={styles.pillRow}>
           <TouchableOpacity
             style={[styles.pill, !selectedCategory && styles.pillActive]}
@@ -168,20 +169,19 @@ const styles = StyleSheet.create({
   pillRow: {
     flexDirection: 'row',
     paddingHorizontal: SPACING.lg,
-    marginBottom: SPACING.md,
-    paddingBottom: 8,
+    marginBottom: SPACING.xs,
     gap: SPACING.xs,
   },
   pill: {
     paddingHorizontal: SPACING.md,
-    paddingVertical: 6,
+    paddingVertical: 0,
     borderRadius: 20,
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 32,
+    height: 32,
   },
   pillActive: {
     backgroundColor: COLORS.primary,
