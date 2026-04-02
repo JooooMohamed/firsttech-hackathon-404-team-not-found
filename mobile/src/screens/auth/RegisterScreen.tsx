@@ -23,7 +23,7 @@ export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
     control,
     handleSubmit,
     watch,
-    formState: {errors, isValid, isDirty},
+    formState: {errors},
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -33,20 +33,19 @@ export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
       password: '',
       confirmPassword: '',
     },
-    mode: 'onTouched',
   });
 
-  // Clear server error when user edits any field
-  const watchedFields = watch();
+  // Watch fields for button state + clearing server error
+  const nameVal = watch('name');
+  const emailVal = watch('email');
+  const passwordVal = watch('password');
+  const confirmVal = watch('confirmPassword');
   useEffect(() => {
-    if (signupError) setSignupError('');
+    if (signupError) {
+      setSignupError('');
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    watchedFields.name,
-    watchedFields.email,
-    watchedFields.password,
-    watchedFields.confirmPassword,
-  ]);
+  }, [nameVal, emailVal, passwordVal, confirmVal]);
 
   const onSubmit = async (data: RegisterFormData) => {
     setSignupError('');
@@ -63,8 +62,6 @@ export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
       }
     }
   };
-
-  const canSubmit = isValid && isDirty;
 
   return (
     <KeyboardAvoidingView
@@ -163,7 +160,6 @@ export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
             title="Create Account"
             onPress={handleSubmit(onSubmit)}
             loading={isLoading}
-            disabled={!canSubmit}
             style={{marginTop: SPACING.md}}
           />
         </View>

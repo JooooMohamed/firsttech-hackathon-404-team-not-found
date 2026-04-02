@@ -68,7 +68,7 @@ export const StaffHomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
     }
   };
 
-  const handleActionFromScan = (action: 'earn' | 'redeem') => {
+  const handleActionFromScan = (_action: 'earn' | 'redeem') => {
     const memberName =
       typeof scannedSession.userId === 'object'
         ? scannedSession.userId.name

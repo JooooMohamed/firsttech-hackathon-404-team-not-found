@@ -24,22 +24,24 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
     handleSubmit,
     setValue,
     watch,
-    formState: {errors, isValid, isDirty},
+    formState: {errors},
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {email: '', password: ''},
-    mode: 'onTouched',
   });
 
-  // Clear server error when user edits any field
-  const watchedFields = watch();
+  // Watch fields for button state + clearing server error
+  const email = watch('email');
+  const password = watch('password');
   useEffect(() => {
-    if (loginError) setLoginError('');
+    if (loginError) {
+      setLoginError('');
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchedFields.email, watchedFields.password]);
+  }, [email, password]);
 
-  const fillDemo = (email: string) => {
-    setValue('email', email, {shouldValidate: true, shouldDirty: true});
+  const fillDemo = (demoEmail: string) => {
+    setValue('email', demoEmail, {shouldValidate: true, shouldDirty: true});
     setValue('password', 'demo123', {shouldValidate: true, shouldDirty: true});
     setLoginError('');
   };
@@ -59,8 +61,6 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
       }
     }
   };
-
-  const canSubmit = isValid && isDirty;
 
   return (
     <KeyboardAvoidingView
@@ -117,7 +117,6 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
             title="Sign In"
             onPress={handleSubmit(onSubmit)}
             loading={isLoading}
-            disabled={!canSubmit}
             style={{marginTop: SPACING.md}}
           />
         </View>

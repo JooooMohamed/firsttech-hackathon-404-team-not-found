@@ -13,7 +13,6 @@ import {
 import {useMerchantStore} from '../../stores';
 import {MerchantCard, EmptyState} from '../../components';
 import {COLORS, SPACING, FONT_SIZE} from '../../constants';
-import {useNavigation} from '@react-navigation/native';
 
 export const MerchantDirectoryScreen: React.FC<{navigation: any}> = ({
   navigation,
@@ -25,6 +24,7 @@ export const MerchantDirectoryScreen: React.FC<{navigation: any}> = ({
 
   useEffect(() => {
     fetchMerchants();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Extract unique categories

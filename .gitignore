@@ -28,3 +28,4 @@ server/seed-atlas.js
 server/add-programs.js
 server/update-descriptions.js
 server/start-server.sh
+EasyPoints-release.apk
