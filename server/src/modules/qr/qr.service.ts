@@ -7,12 +7,15 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { randomBytes } from "crypto";
 import { QrSessionDocument } from "../../schemas/qr-session.schema";
+import { WalletDocument } from "../../schemas/wallet.schema";
 
 @Injectable()
 export class QrService {
   constructor(
     @InjectModel("QrSession")
     private qrSessionModel: Model<QrSessionDocument>,
+    @InjectModel("Wallet")
+    private walletModel: Model<WalletDocument>,
   ) {}
 
   private generateToken(): string {
@@ -28,15 +31,15 @@ export class QrService {
 
   async createSession(
     userId: string,
-    dto: { type: string; merchantId: string; amount?: number },
+    dto: { type?: string; merchantId?: string; amount?: number },
   ) {
     const token = this.generateToken();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     const session = await this.qrSessionModel.create({
-      type: dto.type,
+      type: dto.type || "general",
       userId: new Types.ObjectId(userId),
-      merchantId: new Types.ObjectId(dto.merchantId),
+      merchantId: dto.merchantId ? new Types.ObjectId(dto.merchantId) : null,
       token,
       amount: dto.amount || null,
       status: "pending",
@@ -58,7 +61,18 @@ export class QrService {
     if (session.status === "expired" || session.expiresAt < new Date())
       throw new BadRequestException("Session expired");
 
-    return session;
+    // Attach member balance for staff-side display
+    let easyPointsBalance = 0;
+    try {
+      const wallet = await this.walletModel.findOne({
+        userId: session.userId._id || session.userId,
+        merchantId: null,
+      });
+      easyPointsBalance = wallet?.balance ?? 0;
+    } catch (_) {}
+
+    const sessionObj = session.toObject();
+    return { ...sessionObj, easyPointsBalance };
   }
 
   async completeSession(token: string) {

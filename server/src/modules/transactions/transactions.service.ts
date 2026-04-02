@@ -84,7 +84,11 @@ export class TransactionsService {
         throw new BadRequestException("QR session already used");
       if (session.expiresAt < new Date())
         throw new BadRequestException("QR session expired");
-      if (session.merchantId.toString() !== dto.merchantId)
+      // If session has a merchantId, verify it matches (backward compat)
+      if (
+        session.merchantId &&
+        session.merchantId.toString() !== dto.merchantId
+      )
         throw new BadRequestException("QR token does not match this merchant");
 
       // IDOR fix: override userId from trusted QR session
@@ -143,7 +147,11 @@ export class TransactionsService {
         throw new BadRequestException("QR session already used");
       if (session.expiresAt < new Date())
         throw new BadRequestException("QR session expired");
-      if (session.merchantId.toString() !== dto.merchantId)
+      // If session has a merchantId, verify it matches (backward compat)
+      if (
+        session.merchantId &&
+        session.merchantId.toString() !== dto.merchantId
+      )
         throw new BadRequestException("QR token does not match this merchant");
 
       // IDOR fix: override userId from trusted QR session

@@ -16,27 +16,33 @@ export const EarnQRScreen: React.FC<{navigation: any; route: any}> = ({
   navigation,
   route,
 }) => {
-  const {merchantName, token: initialToken, merchantId} = route.params;
+  const {merchantName, token: initialToken} = route.params || {};
   const {createSession} = useQrStore();
   const [token, setToken] = useState(initialToken || '');
   const [loading, setLoading] = useState(!initialToken);
   const [expiresIn, setExpiresIn] = useState(300); // 5 min
 
-  // If no token was passed, create a session
+  const generateNewSession = () => {
+    setLoading(true);
+    setExpiresIn(300);
+    createSession('general')
+      .then(session => {
+        setToken(session.token);
+        setLoading(false);
+      })
+      .catch(err => {
+        Alert.alert(
+          'Error',
+          err?.response?.data?.message || 'Failed to create code',
+        );
+        setLoading(false);
+      });
+  };
+
+  // Create a generic session on mount if no token provided
   useEffect(() => {
-    if (!initialToken && merchantId) {
-      createSession('earn', merchantId)
-        .then(session => {
-          setToken(session.token);
-          setLoading(false);
-        })
-        .catch(err => {
-          Alert.alert(
-            'Error',
-            err?.response?.data?.message || 'Failed to create earn session',
-          );
-          setLoading(false);
-        });
+    if (!initialToken) {
+      generateNewSession();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -65,7 +71,7 @@ export const EarnQRScreen: React.FC<{navigation: any; route: any}> = ({
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.center}>
-          <Text style={styles.loadingText}>Creating earn code...</Text>
+          <Text style={styles.loadingText}>Creating your code...</Text>
         </View>
       </SafeAreaView>
     );
@@ -78,30 +84,14 @@ export const EarnQRScreen: React.FC<{navigation: any; route: any}> = ({
           <Text style={styles.expiredIcon}>⏰</Text>
           <Text style={styles.expiredTitle}>Code Expired</Text>
           <Text style={styles.expiredSub}>
-            Your earn code has expired. Generate a new one.
+            Your code has expired. Generate a new one.
           </Text>
           <TouchableOpacity
             style={[
               styles.doneBtn,
               {backgroundColor: COLORS.primary, borderColor: COLORS.primary},
             ]}
-            onPress={() => {
-              setLoading(true);
-              setExpiresIn(300);
-              createSession('earn', merchantId)
-                .then(session => {
-                  setToken(session.token);
-                  setLoading(false);
-                })
-                .catch(err => {
-                  Alert.alert(
-                    'Error',
-                    err?.response?.data?.message ||
-                      'Failed to create earn session',
-                  );
-                  setLoading(false);
-                });
-            }}>
+            onPress={generateNewSession}>
             <Text style={[styles.doneBtnText, styles.doneBtnTextWhite]}>
               🔄 Generate New Code
             </Text>
@@ -122,9 +112,13 @@ export const EarnQRScreen: React.FC<{navigation: any; route: any}> = ({
         contentContainerStyle={styles.scrollCenter}
         showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <Text style={styles.earnIcon}>💰</Text>
+        <Text style={styles.earnIcon}>{'\uD83D\uDCF1'}</Text>
         <Text style={styles.title}>Show this to the cashier</Text>
-        <Text style={styles.merchantLabel}>at {merchantName}</Text>
+        {merchantName ? (
+          <Text style={styles.merchantLabel}>at {merchantName}</Text>
+        ) : (
+          <Text style={styles.merchantLabel}>at any EasyPoints merchant</Text>
+        )}
 
         {/* QR Code */}
         <View style={styles.qrWrap}>
@@ -161,17 +155,19 @@ export const EarnQRScreen: React.FC<{navigation: any; route: any}> = ({
           <View style={styles.step}>
             <Text style={styles.stepNum}>1</Text>
             <Text style={styles.stepText}>
-              Make your purchase and pay the bill
+              Show this code to the staff at checkout
             </Text>
           </View>
           <View style={styles.step}>
             <Text style={styles.stepNum}>2</Text>
-            <Text style={styles.stepText}>Show this code to the cashier</Text>
+            <Text style={styles.stepText}>
+              Staff scans your code to identify you
+            </Text>
           </View>
           <View style={styles.step}>
             <Text style={styles.stepNum}>3</Text>
             <Text style={styles.stepText}>
-              Staff enters the code + your bill amount → EP credited!
+              Points are earned or redeemed automatically
             </Text>
           </View>
         </View>

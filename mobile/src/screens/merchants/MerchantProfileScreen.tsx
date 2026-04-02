@@ -5,14 +5,12 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
-  Alert,
   TouchableOpacity,
   LayoutAnimation,
   Platform,
   UIManager,
 } from 'react-native';
-import {useMerchantStore, useQrStore, useWalletStore} from '../../stores';
-import {Button} from '../../components';
+import {useMerchantStore, useWalletStore} from '../../stores';
 import {COLORS, SPACING, FONT_SIZE} from '../../constants';
 
 if (
@@ -28,9 +26,7 @@ export const MerchantProfileScreen: React.FC<{
 }> = ({navigation, route}) => {
   const {merchantId} = route.params;
   const {selectedMerchant, selectMerchant} = useMerchantStore();
-  const {createSession} = useQrStore();
   const {easyPointsBalance} = useWalletStore();
-  const [loading, setLoading] = useState(false);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
   useEffect(() => {
@@ -66,26 +62,14 @@ export const MerchantProfileScreen: React.FC<{
   };
 
   const handleRedeem = async () => {
-    navigation.navigate('Redeem', {
-      merchantId: merchant._id,
-      merchantName: merchant.name,
-    });
+    // Unused — kept for backward compat
   };
 
   const handleEarnQr = async () => {
-    try {
-      setLoading(true);
-      const session = await createSession('earn', merchant._id);
-      navigation.navigate('EarnQR', {
-        merchantId: merchant._id,
-        merchantName: merchant.name,
-        token: session.token,
-      });
-    } catch (e: any) {
-      Alert.alert('Error', e?.message || 'Failed to create QR session');
-    } finally {
-      setLoading(false);
-    }
+    // Navigate to generic QR screen — no merchant-specific session needed
+    navigation.navigate('EarnQR', {
+      merchantName: merchant.name,
+    });
   };
 
   return (
@@ -186,47 +170,6 @@ export const MerchantProfileScreen: React.FC<{
           )}
         </TouchableOpacity>
 
-        {/* Cross-Brand Explainer */}
-        {merchant.crossSmeRedemption ? (
-          <View style={styles.crossExplainer}>
-            <View style={styles.crossExplainerHeader}>
-              <Text style={styles.crossExplainerIcon}>{'\u{1F30D}'}</Text>
-              <Text style={styles.crossExplainerTitle}>
-                Cross-Brand Redemption
-              </Text>
-            </View>
-            <Text style={styles.crossExplainerBody}>
-              This merchant accepts EasyPoints earned at any participating brand
-              in the network. Spend your combined balance here!
-            </Text>
-            <View style={styles.crossExplainerBadge}>
-              <Text style={styles.crossExplainerBadgeText}>
-                {'\u2705'} All EasyPoints accepted
-              </Text>
-            </View>
-          </View>
-        ) : (
-          <View
-            style={[
-              styles.crossExplainer,
-              {
-                borderColor: COLORS.error + '25',
-                backgroundColor: COLORS.error + '06',
-              },
-            ]}>
-            <View style={styles.crossExplainerHeader}>
-              <Text style={styles.crossExplainerIcon}>{'\u{1F512}'}</Text>
-              <Text style={[styles.crossExplainerTitle, {color: COLORS.error}]}>
-                Local Points Only
-              </Text>
-            </View>
-            <Text style={styles.crossExplainerBody}>
-              This merchant only accepts points earned directly at their store.
-              Points from other merchants cannot be redeemed here.
-            </Text>
-          </View>
-        )}
-
         {/* Your Balance Context */}
         <View style={styles.balanceContext}>
           <Text style={styles.balanceLabel}>Your Balance</Text>
@@ -235,48 +178,20 @@ export const MerchantProfileScreen: React.FC<{
           </Text>
         </View>
 
-        {/* Actions */}
+        {/* Show My Code */}
         <View style={styles.actions}>
           <TouchableOpacity
             style={styles.earnBtn}
             onPress={handleEarnQr}
-            activeOpacity={0.7}
-            disabled={loading}>
+            activeOpacity={0.7}>
             <Text style={styles.earnBtnIcon}>📱</Text>
             <View style={styles.earnBtnContent}>
-              <Text style={styles.earnBtnTitle}>
-                {loading ? 'Creating...' : 'Show QR to Earn'}
-              </Text>
+              <Text style={styles.earnBtnTitle}>Show My Code</Text>
               <Text style={styles.earnBtnDesc}>
-                Show your code to staff after paying to earn EP
+                Present your QR code to staff to earn or redeem points
               </Text>
             </View>
           </TouchableOpacity>
-
-          {merchant.redemptionEnabled && (
-            <TouchableOpacity
-              style={[
-                styles.redeemBtn,
-                easyPointsBalance === 0 && styles.redeemBtnDisabled,
-              ]}
-              onPress={handleRedeem}
-              activeOpacity={0.7}
-              disabled={easyPointsBalance === 0}>
-              <Text style={styles.redeemBtnIcon}>🎁</Text>
-              <View style={styles.redeemBtnContent}>
-                <Text style={styles.redeemBtnTitle}>
-                  {easyPointsBalance === 0
-                    ? 'No Points to Redeem'
-                    : 'Redeem Points Here'}
-                </Text>
-                <Text style={styles.redeemBtnDesc}>
-                  {easyPointsBalance === 0
-                    ? 'Earn points first by making purchases'
-                    : 'Spend EP to get discounts at this merchant'}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          )}
         </View>
       </ScrollView>
     </SafeAreaView>

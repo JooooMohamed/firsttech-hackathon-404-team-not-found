@@ -27,7 +27,7 @@ export const StaffHomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
 
   const loadData = useCallback(async () => {
     await fetchMerchants();
-  }, []);
+  }, [fetchMerchants]);
 
   useEffect(() => {
     loadData();
@@ -69,29 +69,26 @@ export const StaffHomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
   };
 
   const handleActionFromScan = (action: 'earn' | 'redeem') => {
-    const memberId =
-      typeof scannedSession.userId === 'object'
-        ? scannedSession.userId._id
-        : scannedSession.userId;
     const memberName =
       typeof scannedSession.userId === 'object'
         ? scannedSession.userId.name
         : 'Member';
+    const memberId =
+      typeof scannedSession.userId === 'object'
+        ? scannedSession.userId._id
+        : scannedSession.userId;
+    const memberBalance = scannedSession.easyPointsBalance ?? 0;
 
-    if (action === 'earn') {
-      navigation.navigate('StaffEarn', {
-        merchantId: user?.merchantId,
-        merchantName,
-        earnRate: assignedMerchant?.earnRate || 10,
-        prefillCode: quickCode,
-      });
-    } else {
-      navigation.navigate('StaffRedeem', {
-        merchantId: user?.merchantId,
-        merchantName,
-        prefillCode: quickCode,
-      });
-    }
+    navigation.navigate('StaffTransaction', {
+      merchantId: user?.merchantId,
+      merchantName,
+      earnRate: assignedMerchant?.earnRate || 10,
+      memberName,
+      memberId,
+      memberBalance,
+      qrToken: quickCode,
+    });
+
     // Reset scan state
     setScannedSession(null);
     setQuickCode('');
@@ -173,7 +170,7 @@ export const StaffHomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
           />
         </View>
 
-        {/* Scanned Member Info (#18 — show user data + choose action) */}
+        {/* Scanned Member Info — show user data + balance */}
         {scannedSession && (
           <View style={styles.scannedCard}>
             <View style={styles.scannedHeader}>
@@ -184,10 +181,11 @@ export const StaffHomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
                     ? scannedSession.userId.name
                     : 'Member'}
                 </Text>
-                <Text style={styles.scannedType}>
-                  Code: {quickCode} {'\u2022'} Type:{' '}
-                  {scannedSession.type || 'earn'}
+                <Text style={styles.scannedBalance}>
+                  Balance:{' '}
+                  {(scannedSession.easyPointsBalance ?? 0).toLocaleString()} EP
                 </Text>
+                <Text style={styles.scannedType}>Code: {quickCode}</Text>
               </View>
               <TouchableOpacity
                 onPress={() => {
@@ -197,26 +195,12 @@ export const StaffHomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
                 <Text style={styles.scannedClose}>{'\u2715'}</Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.scannedActions}>
-              <TouchableOpacity
-                style={[
-                  styles.scannedActionBtn,
-                  {backgroundColor: COLORS.earn || COLORS.success},
-                ]}
-                onPress={() => handleActionFromScan('earn')}>
-                <Text style={styles.scannedActionIcon}>{'\uD83D\uDCB0'}</Text>
-                <Text style={styles.scannedActionLabel}>Issue Points</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.scannedActionBtn,
-                  {backgroundColor: COLORS.error},
-                ]}
-                onPress={() => handleActionFromScan('redeem')}>
-                <Text style={styles.scannedActionIcon}>{'\uD83C\uDF81'}</Text>
-                <Text style={styles.scannedActionLabel}>Redeem</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              style={styles.continueBtn}
+              activeOpacity={0.7}
+              onPress={() => handleActionFromScan('earn')}>
+              <Text style={styles.continueBtnText}>Continue {'\u2192'}</Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -235,113 +219,35 @@ export const StaffHomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
           />
         </Modal>
 
-        {/* Action Cards */}
-        <Text style={styles.sectionTitle}>What would you like to do?</Text>
-
-        {/* Issue Points Card */}
-        <TouchableOpacity
-          style={styles.actionCard}
-          activeOpacity={0.7}
-          onPress={() =>
-            navigation.navigate('StaffEarn', {
-              merchantId: user?.merchantId,
-              merchantName,
-              earnRate: assignedMerchant?.earnRate || 10,
-            })
-          }>
-          <View style={styles.actionIconWrap}>
-            <Text style={styles.actionIcon}>💰</Text>
-          </View>
-          <View style={styles.actionContent}>
-            <Text style={styles.actionTitle}>Issue Points (Earn)</Text>
-            <Text style={styles.actionDesc}>
-              Customer made a purchase? Enter the bill amount and scan their
-              member code to credit EasyPoints to their wallet.
-            </Text>
-          </View>
-          <Text style={styles.actionArrow}>›</Text>
-        </TouchableOpacity>
-
-        {/* Validate Redemption Card */}
-        <TouchableOpacity
-          style={styles.actionCard}
-          activeOpacity={0.7}
-          onPress={() =>
-            navigation.navigate('StaffRedeem', {
-              merchantId: user?.merchantId,
-              merchantName,
-            })
-          }>
-          <View
-            style={[
-              styles.actionIconWrap,
-              {backgroundColor: COLORS.error + '12'},
-            ]}>
-            <Text style={styles.actionIcon}>🎁</Text>
-          </View>
-          <View style={styles.actionContent}>
-            <Text style={styles.actionTitle}>Validate Redemption</Text>
-            <Text style={styles.actionDesc}>
-              Customer wants to spend their EP? Enter their redeem code to
-              verify and deduct points from their wallet.
-            </Text>
-          </View>
-          <Text style={styles.actionArrow}>›</Text>
-        </TouchableOpacity>
-
-        {/* Manage Staff Card — only for merchant owner */}
+        {/* Manage Staff — only for merchant owner */}
         {assignedMerchant && assignedMerchant.ownerId === user?._id && (
-          <TouchableOpacity
-            style={styles.actionCard}
-            activeOpacity={0.7}
-            onPress={() =>
-              navigation.navigate('StaffManagement', {
-                merchantId: user?.merchantId,
-                merchantName,
-              })
-            }>
-            <View
-              style={[
-                styles.actionIconWrap,
-                {backgroundColor: COLORS.primary + '12'},
-              ]}>
-              <Text style={styles.actionIcon}>👥</Text>
-            </View>
-            <View style={styles.actionContent}>
-              <Text style={styles.actionTitle}>Manage Staff</Text>
-              <Text style={styles.actionDesc}>
-                Add or remove team members who can issue and validate points.
-              </Text>
-            </View>
-            <Text style={styles.actionArrow}>›</Text>
-          </TouchableOpacity>
-        )}
-
-        {/* Edit Merchant — only for merchant owner */}
-        {assignedMerchant && assignedMerchant.ownerId === user?._id && (
-          <TouchableOpacity
-            style={styles.actionCard}
-            activeOpacity={0.7}
-            onPress={() =>
-              navigation.navigate('MerchantEdit', {
-                merchantId: user?.merchantId,
-              })
-            }>
-            <View
-              style={[
-                styles.actionIconWrap,
-                {backgroundColor: COLORS.secondary + '12'},
-              ]}>
-              <Text style={styles.actionIcon}>✏️</Text>
-            </View>
-            <View style={styles.actionContent}>
-              <Text style={styles.actionTitle}>Edit Merchant Info</Text>
-              <Text style={styles.actionDesc}>
-                Update name, description, earn rate, and other merchant details.
-              </Text>
-            </View>
-            <Text style={styles.actionArrow}>›</Text>
-          </TouchableOpacity>
+          <>
+            <Text style={styles.sectionTitle}>Management</Text>
+            <TouchableOpacity
+              style={styles.actionCard}
+              activeOpacity={0.7}
+              onPress={() =>
+                navigation.navigate('StaffManagement', {
+                  merchantId: user?.merchantId,
+                  merchantName,
+                })
+              }>
+              <View
+                style={[
+                  styles.actionIconWrap,
+                  {backgroundColor: COLORS.primary + '12'},
+                ]}>
+                <Text style={styles.actionIcon}>{'\uD83D\uDC65'}</Text>
+              </View>
+              <View style={styles.actionContent}>
+                <Text style={styles.actionTitle}>Manage Staff</Text>
+                <Text style={styles.actionDesc}>
+                  Add or remove team members who can issue and validate points.
+                </Text>
+              </View>
+              <Text style={styles.actionArrow}>{'\u203A'}</Text>
+            </TouchableOpacity>
+          </>
         )}
 
         {/* How it works */}
@@ -349,18 +255,18 @@ export const StaffHomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
           <Text style={styles.helpTitle}>How the flow works</Text>
           <View style={styles.helpStep}>
             <Text style={styles.helpNum}>1</Text>
-            <Text style={styles.helpText}>
-              <Text style={{fontWeight: '700'}}>Earn:</Text> Customer shows
-              their QR code → you scan or enter code + bill amount → points
-              credited automatically
-            </Text>
+            <Text style={styles.helpText}>Customer shows their QR code</Text>
           </View>
           <View style={styles.helpStep}>
             <Text style={styles.helpNum}>2</Text>
             <Text style={styles.helpText}>
-              <Text style={{fontWeight: '700'}}>Redeem:</Text> Customer
-              generates redeem code in their app → you scan or enter the code →
-              points deducted
+              You scan or enter the code above
+            </Text>
+          </View>
+          <View style={styles.helpStep}>
+            <Text style={styles.helpNum}>3</Text>
+            <Text style={styles.helpText}>
+              Choose Earn or Redeem, enter amount, done!
             </Text>
           </View>
         </View>
@@ -513,6 +419,12 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: COLORS.text,
   },
+  scannedBalance: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '700',
+    color: COLORS.primary,
+    marginTop: 2,
+  },
   scannedType: {
     fontSize: FONT_SIZE.xs,
     color: COLORS.textSecondary,
@@ -523,24 +435,16 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     padding: SPACING.sm,
   },
-  scannedActions: {
-    flexDirection: 'row',
-    gap: SPACING.sm,
-  },
-  scannedActionBtn: {
-    flex: 1,
+  continueBtn: {
+    backgroundColor: COLORS.primary,
     borderRadius: 12,
     paddingVertical: SPACING.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  scannedActionIcon: {
-    fontSize: 22,
-    marginBottom: 4,
-  },
-  scannedActionLabel: {
+  continueBtnText: {
     color: '#FFFFFF',
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,
     fontWeight: '700',
   },
   sectionTitle: {

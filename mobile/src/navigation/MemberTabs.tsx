@@ -5,7 +5,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {HomeScreen} from '../screens/wallet/HomeScreen';
 import {MerchantDirectoryScreen} from '../screens/merchants/MerchantDirectoryScreen';
 import {MerchantProfileScreen} from '../screens/merchants/MerchantProfileScreen';
-import {RedeemScreen} from '../screens/wallet/RedeemScreen';
 import {EarnQRScreen} from '../screens/wallet/EarnQRScreen';
 import {TransactionHistoryScreen} from '../screens/transactions/TransactionHistoryScreen';
 import {SettingsScreen} from '../screens/settings/SettingsScreen';
@@ -13,7 +12,6 @@ import {LinkProgramScreen} from '../screens/programs/LinkProgramScreen';
 import {MerchantOnboardingScreen} from '../screens/merchant/MerchantOnboardingScreen';
 import {NotificationsScreen} from '../screens/notifications/NotificationsScreen';
 import {OffersScreen} from '../screens/offers/OffersScreen';
-import {ScanQRScreen} from '../screens/wallet/ScanQRScreen';
 import {COLORS, FONT_SIZE} from '../constants';
 import {useNotificationStore} from '../stores';
 
@@ -43,7 +41,7 @@ const HomeStack = () => (
     <Stack.Screen
       name="EarnQR"
       component={EarnQRScreen}
-      options={{title: 'Earn Code'}}
+      options={{title: 'My QR Code'}}
     />
     <Stack.Screen
       name="MerchantOnboarding"
@@ -54,11 +52,6 @@ const HomeStack = () => (
       name="Notifications"
       component={NotificationsScreen}
       options={{title: 'Notifications'}}
-    />
-    <Stack.Screen
-      name="ScanQR"
-      component={ScanQRScreen}
-      options={{headerShown: false}}
     />
   </Stack.Navigator>
 );
@@ -77,19 +70,9 @@ const MerchantsStack = () => (
       options={{title: 'Merchant'}}
     />
     <Stack.Screen
-      name="Redeem"
-      component={RedeemScreen}
-      options={{title: 'Redeem Points'}}
-    />
-    <Stack.Screen
       name="EarnQR"
       component={EarnQRScreen}
-      options={{title: 'Earn Code'}}
-    />
-    <Stack.Screen
-      name="ScanQR"
-      component={ScanQRScreen}
-      options={{headerShown: false}}
+      options={{title: 'My QR Code'}}
     />
   </Stack.Navigator>
 );

@@ -5,8 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StaffHomeScreen} from '../screens/staff/StaffHomeScreen';
 import {StaffStatsScreen} from '../screens/staff/StaffStatsScreen';
 import {StaffSettingsScreen} from '../screens/staff/StaffSettingsScreen';
-import {EarnScreen} from '../screens/staff/EarnScreen';
-import {RedeemValidationScreen} from '../screens/staff/RedeemValidationScreen';
+import {StaffTransactionScreen} from '../screens/staff/StaffTransactionScreen';
 import {StaffManagementScreen} from '../screens/merchant/StaffManagementScreen';
 import {MerchantEditScreen} from '../screens/staff/MerchantEditScreen';
 import {COLORS, FONT_SIZE} from '../constants';
@@ -30,14 +29,9 @@ const HomeStack = () => (
       options={{headerShown: false}}
     />
     <Stack.Screen
-      name="StaffEarn"
-      component={EarnScreen}
-      options={{title: 'Issue Points'}}
-    />
-    <Stack.Screen
-      name="StaffRedeem"
-      component={RedeemValidationScreen}
-      options={{title: 'Validate Redemption'}}
+      name="StaffTransaction"
+      component={StaffTransactionScreen}
+      options={{title: 'Transaction'}}
     />
     <Stack.Screen
       name="StaffManagement"

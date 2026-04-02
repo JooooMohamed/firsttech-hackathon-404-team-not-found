@@ -5,14 +5,14 @@ export type QrSessionDocument = QrSession & Document;
 
 @Schema({ timestamps: true })
 export class QrSession {
-  @Prop({ required: true, enum: ["earn", "redeem"] })
+  @Prop({ enum: ["earn", "redeem", "general"], default: "general" })
   type: string;
 
   @Prop({ type: Types.ObjectId, ref: "User", required: true })
   userId: Types.ObjectId; // the member
 
-  @Prop({ type: Types.ObjectId, ref: "Merchant", required: true })
-  merchantId: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: "Merchant", default: null })
+  merchantId: Types.ObjectId | null;
 
   @Prop({ required: true, unique: true })
   token: string; // 6-char code

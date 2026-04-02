@@ -209,8 +209,8 @@ export const transactionsApi = {
 // ── QR Sessions ───────────────────────────────────────
 export const qrApi = {
   create: (data: {
-    type: 'earn' | 'redeem';
-    merchantId: string;
+    type?: 'earn' | 'redeem' | 'general';
+    merchantId?: string;
     amount?: number;
   }) => api.post<QrSession>('/qr/create', data).then(r => r.data),
 

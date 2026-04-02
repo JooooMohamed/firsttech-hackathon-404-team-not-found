@@ -78,14 +78,15 @@ export interface ProgramCatalogEntry {
 // ── QR Session ────────────────────────────────────────
 export interface QrSession {
   _id: string;
-  type: 'earn' | 'redeem';
+  type: 'earn' | 'redeem' | 'general';
   userId: string | User;
-  merchantId: string | Merchant;
+  merchantId: string | Merchant | null;
   token: string;
   amount: number | null;
   status: 'pending' | 'completed' | 'expired';
   expiresAt: string;
   createdAt: string;
+  easyPointsBalance?: number;
 }
 
 // ── API Response ──────────────────────────────────────

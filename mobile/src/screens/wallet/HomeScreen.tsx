@@ -283,37 +283,20 @@ export const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
               </View>
             </View>
 
-            {/* Earn & Redeem CTAs */}
-            <View style={st.ctaRow}>
-              <TouchableOpacity
-                style={[st.ctaBtn, {backgroundColor: COLORS.earn}]}
-                activeOpacity={0.7}
-                onPress={() =>
-                  navigation.getParent()?.navigate('MerchantsTab')
-                }>
-                <Text style={st.ctaIcon}>{'\u{1F4B0}'}</Text>
-                <Text style={st.ctaLabel}>Earn</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  st.ctaBtn,
-                  {backgroundColor: COLORS.redeem || '#FF6B6B'},
-                ]}
-                activeOpacity={0.7}
-                onPress={() =>
-                  navigation.getParent()?.navigate('MerchantsTab')
-                }>
-                <Text style={st.ctaIcon}>{'\uD83C\uDF81'}</Text>
-                <Text style={st.ctaLabel}>Redeem</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[st.ctaBtn, {backgroundColor: COLORS.primary}]}
-                activeOpacity={0.7}
-                onPress={() => navigation.navigate('ScanQR')}>
-                <Text style={st.ctaIcon}>{'\uD83D\uDCF7'}</Text>
-                <Text style={st.ctaLabel}>Scan QR</Text>
-              </TouchableOpacity>
-            </View>
+            {/* My QR Code — single unified CTA */}
+            <TouchableOpacity
+              style={st.qrCta}
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate('EarnQR', {})}>
+              <Text style={st.qrCtaIcon}>{'\uD83D\uDCF1'}</Text>
+              <View style={st.qrCtaContent}>
+                <Text style={st.qrCtaLabel}>Show My QR Code</Text>
+                <Text style={st.qrCtaSub}>
+                  For earning or redeeming points at any merchant
+                </Text>
+              </View>
+              <Text style={st.qrCtaArrow}>{'\u203A'}</Text>
+            </TouchableOpacity>
 
             {/* Wallet Breakdown */}
             {linkedPrograms.length > 0 && (
@@ -723,26 +706,35 @@ const st = StyleSheet.create({
     fontSize: FONT_SIZE.xs,
     fontWeight: '600',
   },
-  ctaRow: {
+  qrCta: {
     flexDirection: 'row',
-    gap: SPACING.sm,
-    marginBottom: SPACING.md,
-  },
-  ctaBtn: {
-    flex: 1,
-    borderRadius: 14,
-    paddingVertical: SPACING.md,
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: COLORS.primary,
+    borderRadius: 16,
+    padding: SPACING.md,
+    marginBottom: SPACING.lg,
   },
-  ctaIcon: {
-    fontSize: 22,
-    marginBottom: 4,
+  qrCtaIcon: {
+    fontSize: 32,
+    marginRight: SPACING.md,
   },
-  ctaLabel: {
+  qrCtaContent: {
+    flex: 1,
+  },
+  qrCtaLabel: {
     color: '#FFFFFF',
-    fontSize: FONT_SIZE.sm,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.md,
+    fontWeight: '800',
+  },
+  qrCtaSub: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: FONT_SIZE.xs,
+    marginTop: 2,
+  },
+  qrCtaArrow: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 24,
+    marginLeft: SPACING.sm,
   },
   sectionTitle: {
     fontSize: FONT_SIZE.lg,
