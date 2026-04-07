@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   View,
   Text,
@@ -24,6 +24,13 @@ export const QrScanner: React.FC<QrScannerProps> = ({
   subtitle = 'Point your camera at the QR code',
 }) => {
   const [scanned, setScanned] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
+
+  // Delay camera mount to let the Modal fully present first
+  useEffect(() => {
+    const timer = setTimeout(() => setCameraReady(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleRead = useCallback(
     (event: any) => {
@@ -55,13 +62,19 @@ export const QrScanner: React.FC<QrScannerProps> = ({
 
       {/* Camera */}
       <View style={styles.cameraContainer}>
-        <Camera
-          style={styles.camera}
-          cameraType={CameraType.Back}
-          scanBarcode={true}
-          onReadCode={handleRead}
-          showFrame={false}
-        />
+        {cameraReady ? (
+          <Camera
+            style={styles.camera}
+            cameraType={CameraType.Back}
+            scanBarcode={true}
+            onReadCode={handleRead}
+            showFrame={false}
+          />
+        ) : (
+          <View style={[styles.camera, styles.cameraLoading]}>
+            <Text style={styles.cameraLoadingText}>Starting camera...</Text>
+          </View>
+        )}
         {/* Overlay with cutout */}
         <View style={styles.overlay}>
           <View style={styles.overlayTop} />
@@ -144,6 +157,15 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
+  },
+  cameraLoading: {
+    backgroundColor: '#111',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cameraLoadingText: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: FONT_SIZE.sm,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,

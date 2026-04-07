@@ -7,17 +7,51 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
+  Vibration,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {loginSchema, LoginFormData} from '../../schemas';
-import {useAuthStore} from '../../stores';
+import {useAuthStore, useBiometricStore} from '../../stores';
 import {Button, TextInput} from '../../components';
 import {COLORS, SPACING, FONT_SIZE} from '../../constants';
+import ReactNativeBiometrics from 'react-native-biometrics';
+
+const rnBiometrics = new ReactNativeBiometrics();
 
 export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const {login, isLoading} = useAuthStore();
+  const {biometricEnabled, savedEmail, savedPassword} = useBiometricStore();
   const [loginError, setLoginError] = useState('');
+  const canBiometricLogin = biometricEnabled && !!savedEmail && !!savedPassword;
+
+  const handleBiometricLogin = async () => {
+    try {
+      const {success} = await rnBiometrics.simplePrompt({
+        promptMessage: 'Sign in to EasyPoints',
+        cancelButtonText: 'Cancel',
+      });
+      if (success && savedEmail && savedPassword) {
+        Vibration.vibrate(10);
+        setLoginError('');
+        try {
+          await login(savedEmail, savedPassword);
+        } catch (e: any) {
+          setLoginError('Biometric login failed. Please sign in manually.');
+        }
+      }
+    } catch {
+      // User cancelled or biometric unavailable
+    }
+  };
+
+  // Auto-prompt biometric on mount if available
+  useEffect(() => {
+    if (canBiometricLogin) {
+      handleBiometricLogin();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const {
     control,
@@ -119,6 +153,19 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
             loading={isLoading}
             style={{marginTop: SPACING.md}}
           />
+
+          {canBiometricLogin && (
+            <TouchableOpacity
+              style={styles.biometricBtn}
+              onPress={handleBiometricLogin}
+              activeOpacity={0.7}>
+              <Text style={styles.biometricBtnText}>
+                {Platform.OS === 'ios'
+                  ? '🔐 Sign in with Face ID'
+                  : '🔐 Sign in with Biometrics'}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <TouchableOpacity
@@ -235,6 +282,20 @@ const styles = StyleSheet.create({
   createAccountBtn: {
     alignItems: 'center',
     marginBottom: SPACING.lg,
+  },
+  biometricBtn: {
+    marginTop: SPACING.md,
+    backgroundColor: COLORS.surface,
+    borderRadius: 14,
+    paddingVertical: SPACING.md,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.primary + '30',
+  },
+  biometricBtnText: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: '700',
+    color: COLORS.primary,
   },
   createAccountText: {
     fontSize: FONT_SIZE.sm,

@@ -3,6 +3,7 @@ import {persist, createJSONStorage} from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {User, ActiveRole} from '../types';
 import {authApi, usersApi, setAuthToken} from '../services/api';
+import {useBiometricStore} from './biometricStore';
 
 interface AuthState {
   token: string | null;
@@ -48,6 +49,11 @@ export const useAuthStore = create<AuthState>()(
               ? 'member'
               : (res.user.roles[0] as ActiveRole),
           });
+          // Save credentials for biometric login if enabled
+          const bioStore = useBiometricStore.getState();
+          if (bioStore.biometricEnabled) {
+            bioStore.saveCredentials(email, password);
+          }
         } finally {
           set({isLoading: false});
         }

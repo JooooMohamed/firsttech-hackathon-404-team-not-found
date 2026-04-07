@@ -47,6 +47,10 @@ export const SettingsScreen: React.FC<{navigation: any}> = ({}) => {
         if (success) {
           setBiometricEnabled(true);
           Vibration.vibrate(10);
+          Alert.alert(
+            'Biometric Enabled',
+            'Sign out and sign back in once to activate biometric sign-in on the login screen.',
+          );
         }
       } catch {
         Alert.alert('Error', 'Biometric authentication not available');
