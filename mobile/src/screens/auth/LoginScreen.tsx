@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -8,12 +8,13 @@ import {
   ScrollView,
   TouchableOpacity,
   Vibration,
+  TextInput as RNTextInput,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {loginSchema, LoginFormData} from '../../schemas';
 import {useAuthStore, useBiometricStore} from '../../stores';
-import {Button, TextInput} from '../../components';
+import {Button} from '../../components';
 import {COLORS, SPACING, FONT_SIZE} from '../../constants';
 import ReactNativeBiometrics from 'react-native-biometrics';
 
@@ -23,15 +24,28 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const {login, isLoading} = useAuthStore();
   const {biometricEnabled, savedEmail, savedPassword} = useBiometricStore();
   const [loginError, setLoginError] = useState('');
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
   const canBiometricLogin = biometricEnabled && !!savedEmail && !!savedPassword;
+  const passwordRef = useRef<RNTextInput>(null);
+
+  // Check if biometric hardware is available
+  useEffect(() => {
+    rnBiometrics
+      .isSensorAvailable()
+      .then(({available}) => setBiometricAvailable(available))
+      .catch(() => {});
+  }, []);
 
   const handleBiometricLogin = async () => {
+    if (!savedEmail || !savedPassword) {
+      return;
+    }
     try {
       const {success} = await rnBiometrics.simplePrompt({
         promptMessage: 'Sign in to EasyPoints',
         cancelButtonText: 'Cancel',
       });
-      if (success && savedEmail && savedPassword) {
+      if (success) {
         Vibration.vibrate(10);
         setLoginError('');
         try {
@@ -45,7 +59,7 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
     }
   };
 
-  // Auto-prompt biometric on mount if available
+  // Auto-prompt biometric on mount if credentials exist
   useEffect(() => {
     if (canBiometricLogin) {
       handleBiometricLogin();
@@ -114,15 +128,28 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
             control={control}
             name="email"
             render={({field: {onChange, value}}) => (
-              <TextInput
-                label="Email"
-                placeholder="youssef@demo.com"
-                value={value}
-                onChangeText={onChange}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                error={errors.email?.message}
-              />
+              <View style={styles.fieldWrap}>
+                <Text style={styles.fieldLabel}>Email</Text>
+                <RNTextInput
+                  style={[
+                    styles.fieldInput,
+                    errors.email && styles.fieldInputError,
+                  ]}
+                  placeholder="youssef@demo.com"
+                  placeholderTextColor={COLORS.textSecondary}
+                  value={value}
+                  onChangeText={onChange}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  returnKeyType="next"
+                  onSubmitEditing={() => passwordRef.current?.focus()}
+                  blurOnSubmit={false}
+                />
+                {errors.email?.message && (
+                  <Text style={styles.fieldError}>{errors.email.message}</Text>
+                )}
+              </View>
             )}
           />
 
@@ -130,14 +157,29 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
             control={control}
             name="password"
             render={({field: {onChange, value}}) => (
-              <TextInput
-                label="Password"
-                placeholder="Enter password"
-                value={value}
-                onChangeText={onChange}
-                secureTextEntry
-                error={errors.password?.message}
-              />
+              <View style={styles.fieldWrap}>
+                <Text style={styles.fieldLabel}>Password</Text>
+                <RNTextInput
+                  ref={passwordRef}
+                  style={[
+                    styles.fieldInput,
+                    errors.password && styles.fieldInputError,
+                  ]}
+                  placeholder="Enter password"
+                  placeholderTextColor={COLORS.textSecondary}
+                  value={value}
+                  onChangeText={onChange}
+                  secureTextEntry
+                  autoCorrect={false}
+                  returnKeyType="done"
+                  onSubmitEditing={handleSubmit(onSubmit)}
+                />
+                {errors.password?.message && (
+                  <Text style={styles.fieldError}>
+                    {errors.password.message}
+                  </Text>
+                )}
+              </View>
             )}
           />
 
@@ -154,7 +196,7 @@ export const LoginScreen: React.FC<{navigation: any}> = ({navigation}) => {
             style={{marginTop: SPACING.md}}
           />
 
-          {canBiometricLogin && (
+          {biometricAvailable && canBiometricLogin && (
             <TouchableOpacity
               style={styles.biometricBtn}
               onPress={handleBiometricLogin}
@@ -241,6 +283,34 @@ const styles = StyleSheet.create({
   },
   form: {
     marginBottom: SPACING.lg,
+  },
+  fieldWrap: {
+    marginBottom: SPACING.md,
+  },
+  fieldLabel: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginBottom: SPACING.xs,
+  },
+  fieldInput: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 12,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md - 2,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.text,
+    backgroundColor: COLORS.surface,
+    minHeight: 48,
+  },
+  fieldInputError: {
+    borderColor: COLORS.error,
+  },
+  fieldError: {
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.error,
+    marginTop: SPACING.xs,
   },
   errorBox: {
     backgroundColor: COLORS.error + '12',

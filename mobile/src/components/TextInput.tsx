@@ -27,7 +27,6 @@ export const TextInput: React.FC<Props> = ({
         style={[styles.input, error ? styles.inputError : undefined, style]}
         placeholderTextColor={COLORS.textSecondary}
         secureTextEntry={secureTextEntry}
-        textContentType="oneTimeCode"
         {...rest}
       />
       {error && <Text style={styles.error}>{error}</Text>}

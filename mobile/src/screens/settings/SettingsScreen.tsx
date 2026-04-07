@@ -233,35 +233,36 @@ export const SettingsScreen: React.FC<{navigation: any}> = ({}) => {
           </View>
 
           {/* Security Section */}
-          {biometricAvailable && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>SECURITY</Text>
-              <View style={styles.infoCard}>
-                <View style={{flex: 1}}>
-                  <Text style={styles.infoLabel}>
-                    {'\uD83D\uDD12'} Biometric Unlock
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: FONT_SIZE.xs,
-                      color: COLORS.textSecondary,
-                      marginTop: 2,
-                    }}>
-                    Use Face ID or fingerprint to unlock
-                  </Text>
-                </View>
-                <Switch
-                  value={biometricEnabled}
-                  onValueChange={toggleBiometric}
-                  trackColor={{
-                    false: COLORS.border,
-                    true: COLORS.primary + '60',
-                  }}
-                  thumbColor={biometricEnabled ? COLORS.primary : '#f4f3f4'}
-                />
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>SECURITY</Text>
+            <View style={styles.infoCard}>
+              <View style={{flex: 1}}>
+                <Text style={styles.infoLabel}>
+                  {'\uD83D\uDD12'} Biometric Unlock
+                </Text>
+                <Text
+                  style={{
+                    fontSize: FONT_SIZE.xs,
+                    color: COLORS.textSecondary,
+                    marginTop: 2,
+                  }}>
+                  {biometricAvailable
+                    ? 'Use Face ID or fingerprint to unlock'
+                    : 'Enroll a fingerprint in device settings to enable'}
+                </Text>
               </View>
+              <Switch
+                value={biometricEnabled}
+                onValueChange={toggleBiometric}
+                disabled={!biometricAvailable}
+                trackColor={{
+                  false: COLORS.border,
+                  true: COLORS.primary + '60',
+                }}
+                thumbColor={biometricEnabled ? COLORS.primary : '#f4f3f4'}
+              />
             </View>
-          )}
+          </View>
 
           {/* About Section */}
           <View style={styles.section}>
