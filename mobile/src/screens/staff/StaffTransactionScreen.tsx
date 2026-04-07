@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -6,91 +6,18 @@ import {
   SafeAreaView,
   Alert,
   ScrollView,
-  Animated,
   Vibration,
   TouchableOpacity,
 } from 'react-native';
-import {useQrStore, useNotificationStore} from '../../stores';
+import {useQrStore, useNotificationStore, useWalletStore} from '../../stores';
 import {transactionsApi} from '../../services/api';
-import {Button, TextInput, ConfettiOverlay} from '../../components';
+import {
+  Button,
+  TextInput,
+  ConfettiOverlay,
+  TransactionReceipt,
+} from '../../components';
 import {COLORS, SPACING, FONT_SIZE} from '../../constants';
-
-// ─── Success Result ────────────────────────────────────
-const SuccessResult: React.FC<{
-  result: any;
-  onDone: () => void;
-  type: 'earn' | 'redeem';
-}> = ({result, onDone, type}) => {
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 4,
-        tension: 40,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.resultContainer}>
-        <Animated.View
-          style={{
-            transform: [{scale: scaleAnim}],
-            opacity: fadeAnim,
-            alignItems: 'center',
-          }}>
-          <Text style={styles.resultIcon}>
-            {type === 'earn' ? '\u2705' : '\uD83C\uDF81'}
-          </Text>
-          <Text style={styles.resultTitle}>
-            {type === 'earn' ? 'Points Issued!' : 'Redemption Complete!'}
-          </Text>
-          <Text style={styles.resultPoints}>
-            {type === 'earn'
-              ? `+${result.totalPoints || result.pointsEarned} EP`
-              : `-${result.pointsRedeemed} EP`}
-          </Text>
-          {type === 'earn' && (
-            <>
-              <Text style={styles.resultSub}>
-                {result.amountAed} AED \u00D7 {result.earnRate} EP/AED ={' '}
-                {result.pointsEarned} EP
-              </Text>
-              {result.bonusPoints > 0 && (
-                <Text
-                  style={[
-                    styles.resultSub,
-                    {color: COLORS.secondary, fontWeight: '700'},
-                  ]}>
-                  + {result.bonusPoints} bonus EP
-                  {result.appliedOffers?.length
-                    ? ` (${result.appliedOffers.join(', ')})`
-                    : ''}
-                </Text>
-              )}
-            </>
-          )}
-          <Button
-            title="Done"
-            onPress={onDone}
-            style={{marginTop: SPACING.xl}}
-          />
-        </Animated.View>
-      </View>
-      {type === 'redeem' && <ConfettiOverlay visible={true} />}
-    </SafeAreaView>
-  );
-};
 
 // ─── Main Screen ───────────────────────────────────────
 export const StaffTransactionScreen: React.FC<{
@@ -203,6 +130,11 @@ export const StaffTransactionScreen: React.FC<{
       }
 
       setStep('result');
+      // Refresh wallet balance in background so HomeScreen shows updated data
+      useWalletStore
+        .getState()
+        .refreshAll()
+        .catch(() => {});
     } catch (e: any) {
       Alert.alert(
         'Error',
@@ -215,12 +147,30 @@ export const StaffTransactionScreen: React.FC<{
 
   // ─── Result screen ───
   if (step === 'result' && result && action) {
+    const totalPoints =
+      action === 'earn'
+        ? result.totalPoints || result.pointsEarned || 0
+        : result.pointsRedeemed || numAmount;
+    const newBal =
+      action === 'earn'
+        ? memberBalance + totalPoints
+        : memberBalance - totalPoints;
     return (
-      <SuccessResult
-        result={result}
-        onDone={() => navigation.goBack()}
-        type={action}
-      />
+      <SafeAreaView style={styles.container}>
+        <TransactionReceipt
+          type={action}
+          points={totalPoints}
+          amountAed={action === 'earn' ? result.amountAed : undefined}
+          earnRate={action === 'earn' ? result.earnRate || earnRate : undefined}
+          bonusPoints={action === 'earn' ? result.bonusPoints || 0 : 0}
+          appliedOffers={result.appliedOffers || []}
+          memberName={memberName}
+          merchantName={merchantName}
+          newBalance={newBal}
+          onDone={() => navigation.goBack()}
+        />
+        {action === 'redeem' && <ConfettiOverlay visible={true} />}
+      </SafeAreaView>
     );
   }
 
@@ -249,12 +199,17 @@ export const StaffTransactionScreen: React.FC<{
             <Text style={styles.stepTitle}>What would you like to do?</Text>
             <View style={styles.actionRow}>
               <TouchableOpacity
-                style={[styles.actionBtn, {backgroundColor: COLORS.earn || COLORS.success}]}
+                style={[
+                  styles.actionBtn,
+                  {backgroundColor: COLORS.earn || COLORS.success},
+                ]}
                 activeOpacity={0.7}
                 onPress={() => handleSelectAction('earn')}>
                 <Text style={styles.actionBtnIcon}>{'\uD83D\uDCB0'}</Text>
                 <Text style={styles.actionBtnLabel}>Issue Points</Text>
-                <Text style={styles.actionBtnSub}>Customer made a purchase</Text>
+                <Text style={styles.actionBtnSub}>
+                  Customer made a purchase
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
@@ -290,9 +245,7 @@ export const StaffTransactionScreen: React.FC<{
                 setAction(null);
                 setAmount('');
               }}>
-              <Text style={styles.backLinkText}>
-                {'\u2190'} Change action
-              </Text>
+              <Text style={styles.backLinkText}>{'\u2190'} Change action</Text>
             </TouchableOpacity>
 
             <View
@@ -340,7 +293,11 @@ export const StaffTransactionScreen: React.FC<{
                 {action === 'earn' ? (
                   <Text style={styles.previewText}>
                     {numAmount} AED \u00D7 {earnRate} EP/AED ={' '}
-                    <Text style={{fontWeight: '900', color: COLORS.earn || COLORS.success}}>
+                    <Text
+                      style={{
+                        fontWeight: '900',
+                        color: COLORS.earn || COLORS.success,
+                      }}>
                       ~{estimatedPoints} EP
                     </Text>
                   </Text>
@@ -495,33 +452,5 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.sm,
     color: COLORS.error,
     fontWeight: '600',
-  },
-
-  /* Result */
-  resultContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: SPACING.lg,
-  },
-  resultIcon: {fontSize: 64, marginBottom: SPACING.md},
-  resultTitle: {
-    fontSize: FONT_SIZE.xxl,
-    fontWeight: '900',
-    color: COLORS.text,
-    textAlign: 'center',
-    marginBottom: SPACING.sm,
-  },
-  resultPoints: {
-    fontSize: FONT_SIZE.hero,
-    fontWeight: '900',
-    color: COLORS.primary,
-    textAlign: 'center',
-    marginBottom: SPACING.sm,
-  },
-  resultSub: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
   },
 });

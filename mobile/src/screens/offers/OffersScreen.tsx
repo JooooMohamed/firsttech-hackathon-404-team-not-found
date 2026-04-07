@@ -120,6 +120,41 @@ export const OffersScreen: React.FC = () => {
               {item.description ? (
                 <Text style={styles.offerDesc}>{item.description}</Text>
               ) : null}
+              {/* Use Offer CTA */}
+              {merchantId && (
+                <TouchableOpacity
+                  style={[styles.useOfferBtn, {backgroundColor: color}]}
+                  activeOpacity={0.8}
+                  onPress={() => {
+                    const mName = merchant
+                      ? (merchant as any).name
+                      : 'Merchant';
+                    if (item.type === 'bonus') {
+                      // Bonus offers → show QR to earn with multiplier
+                      nav.navigate('EarnQR', {
+                        merchantName: mName,
+                        offerId: item._id,
+                        offerTitle: item.title,
+                      });
+                    } else {
+                      // Discount / freebie → go to redeem screen
+                      nav.navigate('Redeem', {
+                        merchantId,
+                        merchantName: mName,
+                        offerId: item._id,
+                        offerTitle: item.title,
+                      });
+                    }
+                  }}>
+                  <Text style={styles.useOfferBtnText}>
+                    {item.type === 'bonus'
+                      ? '⚡ Earn with Bonus'
+                      : item.type === 'freebie'
+                      ? '🎁 Claim Freebie'
+                      : '💸 Redeem Discount'}
+                  </Text>
+                </TouchableOpacity>
+              )}
             </TouchableOpacity>
           );
         }}
@@ -226,5 +261,16 @@ const styles = StyleSheet.create({
   },
   backArrow: {
     fontSize: 22,
+  },
+  useOfferBtn: {
+    marginTop: SPACING.sm,
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  useOfferBtnText: {
+    color: '#FFFFFF',
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '800',
   },
 });

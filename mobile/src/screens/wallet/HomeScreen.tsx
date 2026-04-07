@@ -13,6 +13,7 @@ import {
   FlatList,
 } from 'react-native';
 import Svg, {Circle, G} from 'react-native-svg';
+import {useFocusEffect} from '@react-navigation/native';
 import {
   useAuthStore,
   useWalletStore,
@@ -134,6 +135,13 @@ export const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
     loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Auto-refresh when screen comes into focus (e.g. after transaction)
+  useFocusEffect(
+    useCallback(() => {
+      loadAll();
+    }, [loadAll]),
+  );
 
   const onRefresh = useCallback(async () => {
     Vibration.vibrate(10);

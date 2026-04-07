@@ -12,6 +12,7 @@ import {LinkProgramScreen} from '../screens/programs/LinkProgramScreen';
 import {MerchantOnboardingScreen} from '../screens/merchant/MerchantOnboardingScreen';
 import {NotificationsScreen} from '../screens/notifications/NotificationsScreen';
 import {OffersScreen} from '../screens/offers/OffersScreen';
+import {RedeemScreen} from '../screens/wallet/RedeemScreen';
 import {COLORS, FONT_SIZE} from '../constants';
 import {useNotificationStore} from '../stores';
 
@@ -100,6 +101,16 @@ const OffersStack = () => (
       name="MerchantProfile"
       component={MerchantProfileScreen}
       options={{title: 'Merchant'}}
+    />
+    <Stack.Screen
+      name="EarnQR"
+      component={EarnQRScreen}
+      options={{title: 'My QR Code'}}
+    />
+    <Stack.Screen
+      name="Redeem"
+      component={RedeemScreen}
+      options={{title: 'Redeem Points'}}
     />
   </Stack.Navigator>
 );

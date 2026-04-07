@@ -12,3 +12,4 @@ export {MiniBarChart} from './MiniBarChart';
 export {LineChart} from './LineChart';
 export {ErrorBoundary} from './ErrorBoundary';
 export {QrScanner} from './QrScanner';
+export {TransactionReceipt} from './TransactionReceipt';
