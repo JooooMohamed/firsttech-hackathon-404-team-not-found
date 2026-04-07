@@ -4,3 +4,4 @@ export {useMerchantStore} from './merchantStore';
 export {useTransactionStore} from './transactionStore';
 export {useQrStore} from './qrStore';
 export {useNotificationStore} from './notificationStore';
+export {useBiometricStore} from './biometricStore';

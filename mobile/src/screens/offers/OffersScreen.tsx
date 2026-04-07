@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {offersApi} from '../../services/api';
 import {Offer} from '../../types';
-import {EmptyState} from '../../components';
+import {EmptyState, SkeletonCard} from '../../components';
 import {COLORS, SPACING, FONT_SIZE} from '../../constants';
 import {useNavigation} from '@react-navigation/native';
 
@@ -159,13 +159,19 @@ export const OffersScreen: React.FC = () => {
           );
         }}
         ListEmptyComponent={
-          !loading ? (
+          loading ? (
+            <View>
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </View>
+          ) : (
             <EmptyState
               icon="🎯"
               title="No active offers"
               subtitle="Check back later — merchants post new deals all the time!"
             />
-          ) : null
+          )
         }
       />
     </SafeAreaView>

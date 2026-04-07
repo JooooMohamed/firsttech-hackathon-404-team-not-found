@@ -11,7 +11,7 @@ import {
   ScrollView,
 } from 'react-native';
 import {useMerchantStore} from '../../stores';
-import {MerchantCard, EmptyState} from '../../components';
+import {MerchantCard, EmptyState, SkeletonCard} from '../../components';
 import {COLORS, SPACING, FONT_SIZE} from '../../constants';
 
 export const MerchantDirectoryScreen: React.FC<{navigation: any}> = ({
@@ -118,15 +118,24 @@ export const MerchantDirectoryScreen: React.FC<{navigation: any}> = ({
           />
         )}
         ListEmptyComponent={
-          <EmptyState
-            icon={search ? '🔍' : '🏪'}
-            title={search ? 'No Matches' : 'No Merchants Yet'}
-            subtitle={
-              search
-                ? 'Try a different search term'
-                : 'Pull to refresh or check back later'
-            }
-          />
+          isLoading ? (
+            <View>
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </View>
+          ) : (
+            <EmptyState
+              icon={search ? '🔍' : '🏪'}
+              title={search ? 'No Matches' : 'No Merchants Yet'}
+              subtitle={
+                search
+                  ? 'Try a different search term'
+                  : 'Pull to refresh or check back later'
+              }
+            />
+          )
         }
       />
     </SafeAreaView>

@@ -37,6 +37,7 @@ export const registerSchema = z
       .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
       .regex(/[0-9]/, 'Must contain at least one number'),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
+    referralCode: z.string().max(6).optional(),
   })
   .refine(data => data.password === data.confirmPassword, {
     message: 'Passwords do not match',

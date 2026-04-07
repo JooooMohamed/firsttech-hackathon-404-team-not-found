@@ -32,6 +32,7 @@ export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
       phone: '',
       password: '',
       confirmPassword: '',
+      referralCode: '',
     },
   });
 
@@ -146,6 +147,21 @@ export const RegisterScreen: React.FC<{navigation: any}> = ({navigation}) => {
                 onChangeText={onChange}
                 secureTextEntry
                 error={errors.confirmPassword?.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="referralCode"
+            render={({field: {onChange, value}}) => (
+              <TextInput
+                label="Referral Code (optional)"
+                placeholder="e.g. ABC123"
+                value={value || ''}
+                onChangeText={t => onChange(t.toUpperCase())}
+                autoCapitalize="characters"
+                maxLength={6}
               />
             )}
           />

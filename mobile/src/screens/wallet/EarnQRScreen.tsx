@@ -16,7 +16,7 @@ export const EarnQRScreen: React.FC<{navigation: any; route: any}> = ({
   navigation,
   route,
 }) => {
-  const {merchantName, token: initialToken} = route.params || {};
+  const {merchantName, token: initialToken, offerTitle} = route.params || {};
   const {createSession} = useQrStore();
   const [token, setToken] = useState(initialToken || '');
   const [loading, setLoading] = useState(!initialToken);
@@ -120,6 +120,15 @@ export const EarnQRScreen: React.FC<{navigation: any; route: any}> = ({
           <Text style={styles.merchantLabel}>at any EasyPoints merchant</Text>
         )}
 
+        {/* Active offer context */}
+        {offerTitle && (
+          <View style={styles.offerBanner}>
+            <Text style={styles.offerBannerText}>
+              {'\u26A1'} {offerTitle}
+            </Text>
+          </View>
+        )}
+
         {/* QR Code */}
         <View style={styles.qrWrap}>
           <QRCode
@@ -221,6 +230,21 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: SPACING.xs,
     marginBottom: SPACING.lg,
+  },
+  offerBanner: {
+    backgroundColor: COLORS.warning + '15',
+    borderRadius: 10,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    marginBottom: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.warning + '30',
+  },
+  offerBannerText: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '700',
+    color: COLORS.warning,
+    textAlign: 'center',
   },
   qrWrap: {
     backgroundColor: COLORS.surface,

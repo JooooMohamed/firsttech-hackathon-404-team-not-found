@@ -285,6 +285,15 @@ export const StaffTransactionScreen: React.FC<{
               value={amount}
               onChangeText={t => setAmount(t.replace(/[^0-9]/g, ''))}
               keyboardType="number-pad"
+              error={
+                amount.length > 0 && numAmount <= 0
+                  ? 'Enter a valid amount'
+                  : action === 'redeem' && numAmount > memberBalance
+                  ? `Exceeds balance (${memberBalance} EP available)`
+                  : action === 'earn' && numAmount > 100000
+                  ? 'Amount seems too high — please double check'
+                  : undefined
+              }
             />
 
             {numAmount > 0 && (
@@ -328,6 +337,10 @@ export const StaffTransactionScreen: React.FC<{
               }
               onPress={handleConfirm}
               loading={loading}
+              disabled={
+                numAmount <= 0 ||
+                (action === 'redeem' && numAmount > memberBalance)
+              }
               style={{marginTop: SPACING.md}}
             />
           </>

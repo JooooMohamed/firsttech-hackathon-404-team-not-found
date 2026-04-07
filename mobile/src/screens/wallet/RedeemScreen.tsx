@@ -17,7 +17,7 @@ export const RedeemScreen: React.FC<{navigation: any; route: any}> = ({
   navigation,
   route,
 }) => {
-  const {merchantId, merchantName} = route.params;
+  const {merchantId, merchantName, offerTitle} = route.params;
   const {easyPointsBalance, epAedRate} = useWalletStore();
   const {createSession, activeSession} = useQrStore();
   const [points, setPoints] = useState('');
@@ -159,6 +159,13 @@ export const RedeemScreen: React.FC<{navigation: any; route: any}> = ({
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.title}>Redeem at {merchantName}</Text>
+        {offerTitle && (
+          <View style={styles.offerBanner}>
+            <Text style={styles.offerBannerText}>
+              {'\u{1F381}'} {offerTitle}
+            </Text>
+          </View>
+        )}
         <Text style={styles.balance}>
           Available: {easyPointsBalance.toLocaleString()} EP
         </Text>
@@ -169,6 +176,13 @@ export const RedeemScreen: React.FC<{navigation: any; route: any}> = ({
           value={points}
           onChangeText={setPoints}
           keyboardType="number-pad"
+          error={
+            points.length > 0 && (parseInt(points, 10) || 0) <= 0
+              ? 'Enter a valid number'
+              : (parseInt(points, 10) || 0) > easyPointsBalance
+              ? `Exceeds your balance (${easyPointsBalance} EP)`
+              : undefined
+          }
         />
 
         {/* Point Conversion Preview */}
@@ -211,6 +225,21 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: COLORS.text,
     marginBottom: SPACING.sm,
+  },
+  offerBanner: {
+    backgroundColor: COLORS.secondary + '15',
+    borderRadius: 10,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    marginBottom: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.secondary + '30',
+  },
+  offerBannerText: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '700',
+    color: COLORS.secondary,
+    textAlign: 'center',
   },
   balance: {
     fontSize: FONT_SIZE.md,

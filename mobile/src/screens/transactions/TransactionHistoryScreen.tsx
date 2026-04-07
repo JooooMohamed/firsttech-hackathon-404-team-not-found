@@ -13,7 +13,7 @@ import {
   Share,
 } from 'react-native';
 import {useTransactionStore} from '../../stores';
-import {TransactionItem, EmptyState} from '../../components';
+import {TransactionItem, EmptyState, SkeletonCard} from '../../components';
 import {transactionsApi} from '../../services/api';
 import {Transaction} from '../../types';
 import {COLORS, SPACING, FONT_SIZE} from '../../constants';
@@ -162,23 +162,32 @@ export const TransactionHistoryScreen: React.FC<{navigation?: any}> = ({
         }
         renderItem={({item}) => <TransactionItem transaction={item} />}
         ListEmptyComponent={
-          <EmptyState
-            icon={
-              filter === 'earn'
-                ? '\u{1F4B0}'
-                : filter === 'redeem'
-                ? '\u{1F381}'
-                : '\u{1F4CB}'
-            }
-            title={
-              filter === 'all'
-                ? 'No transactions yet'
-                : `No ${filter} transactions`
-            }
-            subtitle="Visit a merchant to earn your first EasyPoints!"
-            actionLabel="Browse Merchants"
-            onAction={() => navigation?.navigate?.('MerchantDirectory')}
-          />
+          isLoading ? (
+            <View>
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </View>
+          ) : (
+            <EmptyState
+              icon={
+                filter === 'earn'
+                  ? '\u{1F4B0}'
+                  : filter === 'redeem'
+                  ? '\u{1F381}'
+                  : '\u{1F4CB}'
+              }
+              title={
+                filter === 'all'
+                  ? 'No transactions yet'
+                  : `No ${filter} transactions`
+              }
+              subtitle="Visit a merchant to earn your first EasyPoints!"
+              actionLabel="Browse Merchants"
+              onAction={() => navigation?.navigate?.('MerchantDirectory')}
+            />
+          )
         }
       />
     </SafeAreaView>

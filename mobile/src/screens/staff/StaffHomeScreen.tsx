@@ -9,9 +9,12 @@ import {
   Alert,
   RefreshControl,
   Modal,
+  Share,
+  Vibration,
 } from 'react-native';
 import {useAuthStore, useMerchantStore, useQrStore} from '../../stores';
 import {RoleSwitcher, QrScanner, TextInput, Button} from '../../components';
+import {transactionsApi} from '../../services/api';
 import {COLORS, SPACING, FONT_SIZE} from '../../constants';
 
 export const StaffHomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
@@ -24,6 +27,7 @@ export const StaffHomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const [scanLoading, setScanLoading] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [scannedSession, setScannedSession] = useState<any>(null);
+  const [exporting, setExporting] = useState(false);
 
   const loadData = useCallback(async () => {
     await fetchMerchants();
@@ -47,6 +51,26 @@ export const StaffHomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
       {text: 'Cancel', style: 'cancel'},
       {text: 'Sign Out', style: 'destructive', onPress: logout},
     ]);
+  };
+
+  const handleExportAnalytics = async () => {
+    if (!user?.merchantId) return;
+    try {
+      setExporting(true);
+      const csvData = await transactionsApi.exportMerchantCsv(user.merchantId);
+      await Share.share({
+        message: csvData,
+        title: `${merchantName} — Analytics Export`,
+      });
+      Vibration.vibrate(10);
+    } catch (e: any) {
+      Alert.alert(
+        'Export Failed',
+        e?.response?.data?.message || 'Could not export analytics',
+      );
+    } finally {
+      setExporting(false);
+    }
   };
 
   const handleQuickLookup = async (codeValue?: string) => {
@@ -248,6 +272,32 @@ export const StaffHomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
               <Text style={styles.actionArrow}>{'\u203A'}</Text>
             </TouchableOpacity>
           </>
+        )}
+
+        {/* Analytics Export */}
+        {user?.merchantId && (
+          <TouchableOpacity
+            style={styles.actionCard}
+            activeOpacity={0.7}
+            disabled={exporting}
+            onPress={handleExportAnalytics}>
+            <View
+              style={[
+                styles.actionIconWrap,
+                {backgroundColor: COLORS.secondary + '12'},
+              ]}>
+              <Text style={styles.actionIcon}>
+                {exporting ? '\u23F3' : '\uD83D\uDCCA'}
+              </Text>
+            </View>
+            <View style={styles.actionContent}>
+              <Text style={styles.actionTitle}>Export Analytics</Text>
+              <Text style={styles.actionDesc}>
+                Download transaction data as CSV for reporting.
+              </Text>
+            </View>
+            <Text style={styles.actionArrow}>{'\u203A'}</Text>
+          </TouchableOpacity>
         )}
 
         {/* How it works */}

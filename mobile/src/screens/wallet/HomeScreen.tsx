@@ -372,6 +372,64 @@ export const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
                       <Text style={st.insightLabel}>Transactions</Text>
                     </View>
                   </View>
+
+                  {/* Spending visualization bars */}
+                  {(() => {
+                    const maxBar = Math.max(
+                      insights.earned,
+                      insights.redeemed,
+                      1,
+                    );
+                    const net = insights.earned - insights.redeemed;
+                    return (
+                      <View style={st.vizSection}>
+                        <View style={st.vizBarRow}>
+                          <Text style={st.vizBarLabel}>Earned</Text>
+                          <View style={st.vizBarTrack}>
+                            <View
+                              style={[
+                                st.vizBarFill,
+                                {
+                                  width: `${Math.round(
+                                    (insights.earned / maxBar) * 100,
+                                  )}%`,
+                                  backgroundColor: COLORS.earn,
+                                },
+                              ]}
+                            />
+                          </View>
+                        </View>
+                        <View style={st.vizBarRow}>
+                          <Text style={st.vizBarLabel}>Redeemed</Text>
+                          <View style={st.vizBarTrack}>
+                            <View
+                              style={[
+                                st.vizBarFill,
+                                {
+                                  width: `${Math.round(
+                                    (insights.redeemed / maxBar) * 100,
+                                  )}%`,
+                                  backgroundColor: COLORS.redeem,
+                                },
+                              ]}
+                            />
+                          </View>
+                        </View>
+                        <View style={st.vizNetRow}>
+                          <Text style={st.vizNetLabel}>Net Points</Text>
+                          <Text
+                            style={[
+                              st.vizNetValue,
+                              {color: net >= 0 ? COLORS.earn : COLORS.redeem},
+                            ]}>
+                            {net >= 0 ? '+' : ''}
+                            {net.toLocaleString()} EP
+                          </Text>
+                        </View>
+                      </View>
+                    );
+                  })()}
+
                   {insights.topMerchant && (
                     <View style={st.topMerchant}>
                       <Text style={st.topMerchantLabel}>
@@ -437,7 +495,7 @@ export const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
             )}
 
             {/* Recent Activity */}
-            {recentTxns.length > 0 && (
+            {recentTxns.length > 0 ? (
               <>
                 <View style={st.sectionHeader}>
                   <Text style={st.sectionTitle}>Recent Activity</Text>
@@ -487,6 +545,14 @@ export const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
                   );
                 })}
               </>
+            ) : (
+              <View style={st.emptyActivityCard}>
+                <Text style={st.emptyActivityIcon}>{'\u{1F4CB}'}</Text>
+                <Text style={st.emptyActivityTitle}>No activity yet</Text>
+                <Text style={st.emptyActivitySub}>
+                  Your first transaction will appear here
+                </Text>
+              </View>
             )}
 
             {/* Quick Actions */}
@@ -535,10 +601,13 @@ export const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
               <View style={st.actionFlex}>
                 <Text style={st.shareTitle}>Invite & Earn 5 EP</Text>
                 <Text style={st.shareDesc}>
-                  Share your code
-                  {user?.referralCode ? ` (${user.referralCode})` : ''} — earn 5
-                  EP when they register
+                  Share your code — earn 5 EP when they register
                 </Text>
+                {user?.referralCode && (
+                  <View style={st.referralCodeBadge}>
+                    <Text style={st.referralCodeText}>{user.referralCode}</Text>
+                  </View>
+                )}
               </View>
               <Text style={st.actionArrow}>{'\u203A'}</Text>
             </TouchableOpacity>
@@ -783,6 +852,49 @@ const st = StyleSheet.create({
     marginTop: 2,
   },
   insightDivider: {width: 1, height: 30, backgroundColor: COLORS.border},
+  vizSection: {
+    marginTop: SPACING.sm,
+    paddingTop: SPACING.sm,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  vizBarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  vizBarLabel: {
+    width: 64,
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.textSecondary,
+    fontWeight: '600',
+  },
+  vizBarTrack: {
+    flex: 1,
+    height: 10,
+    backgroundColor: COLORS.border,
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  vizBarFill: {
+    height: 10,
+    borderRadius: 5,
+  },
+  vizNetRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  vizNetLabel: {
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.textSecondary,
+    fontWeight: '600',
+  },
+  vizNetValue: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '900',
+  },
   topMerchant: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -856,6 +968,24 @@ const st = StyleSheet.create({
   txTitle: {fontSize: FONT_SIZE.sm, fontWeight: '600', color: COLORS.text},
   txTime: {fontSize: FONT_SIZE.xs - 1, color: COLORS.textSecondary},
   txPoints: {fontSize: FONT_SIZE.md, fontWeight: '800'},
+  emptyActivityCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 14,
+    padding: SPACING.lg,
+    alignItems: 'center',
+    marginBottom: SPACING.sm,
+  },
+  emptyActivityIcon: {fontSize: 32, marginBottom: SPACING.xs},
+  emptyActivityTitle: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  emptyActivitySub: {
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
   actionRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -927,6 +1057,22 @@ const st = StyleSheet.create({
     fontSize: FONT_SIZE.xs,
     color: COLORS.textSecondary,
     marginTop: 1,
+  },
+  referralCodeBadge: {
+    marginTop: 6,
+    backgroundColor: COLORS.secondary + '15',
+    borderRadius: 8,
+    paddingHorizontal: SPACING.sm + 2,
+    paddingVertical: 3,
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: COLORS.secondary + '30',
+  },
+  referralCodeText: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '900',
+    color: COLORS.secondary,
+    letterSpacing: 2,
   },
   bottomActions: {
     flexDirection: 'row',

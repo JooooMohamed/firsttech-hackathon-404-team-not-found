@@ -17,6 +17,7 @@ interface AuthState {
     email: string;
     phone?: string;
     password: string;
+    referralCode?: string;
   }) => Promise<void>;
   logout: () => void;
   switchRole: (role: ActiveRole) => void;

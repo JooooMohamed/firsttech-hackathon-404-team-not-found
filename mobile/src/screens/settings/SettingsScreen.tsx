@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -11,19 +11,51 @@ import {
   Vibration,
   KeyboardAvoidingView,
   Platform,
+  Switch,
 } from 'react-native';
-import {useAuthStore} from '../../stores';
+import {useAuthStore, useBiometricStore} from '../../stores';
 import {usersApi} from '../../services/api';
 import {COLORS, SPACING, FONT_SIZE} from '../../constants';
 import {useNavigation} from '@react-navigation/native';
+import ReactNativeBiometrics from 'react-native-biometrics';
+
+const rnBiometrics = new ReactNativeBiometrics();
 
 export const SettingsScreen: React.FC<{navigation: any}> = ({}) => {
   const nav = useNavigation<any>();
   const {user, logout, setUser} = useAuthStore();
+  const {biometricEnabled, setBiometricEnabled} = useBiometricStore();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(user?.name || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [saving, setSaving] = useState(false);
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+
+  useEffect(() => {
+    rnBiometrics
+      .isSensorAvailable()
+      .then(({available}) => setBiometricAvailable(available))
+      .catch(() => {});
+  }, []);
+
+  const toggleBiometric = async (val: boolean) => {
+    if (val) {
+      try {
+        const {success} = await rnBiometrics.simplePrompt({
+          promptMessage: 'Enable biometric unlock',
+        });
+        if (success) {
+          setBiometricEnabled(true);
+          Vibration.vibrate(10);
+        }
+      } catch {
+        Alert.alert('Error', 'Biometric authentication not available');
+      }
+    } else {
+      setBiometricEnabled(false);
+      Vibration.vibrate(10);
+    }
+  };
 
   const handleSave = async () => {
     try {
@@ -195,6 +227,37 @@ export const SettingsScreen: React.FC<{navigation: any}> = ({}) => {
               </View>
             </View>
           </View>
+
+          {/* Security Section */}
+          {biometricAvailable && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>SECURITY</Text>
+              <View style={styles.infoCard}>
+                <View style={{flex: 1}}>
+                  <Text style={styles.infoLabel}>
+                    {'\uD83D\uDD12'} Biometric Unlock
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: FONT_SIZE.xs,
+                      color: COLORS.textSecondary,
+                      marginTop: 2,
+                    }}>
+                    Use Face ID or fingerprint to unlock
+                  </Text>
+                </View>
+                <Switch
+                  value={biometricEnabled}
+                  onValueChange={toggleBiometric}
+                  trackColor={{
+                    false: COLORS.border,
+                    true: COLORS.primary + '60',
+                  }}
+                  thumbColor={biometricEnabled ? COLORS.primary : '#f4f3f4'}
+                />
+              </View>
+            </View>
+          )}
 
           {/* About Section */}
           <View style={styles.section}>

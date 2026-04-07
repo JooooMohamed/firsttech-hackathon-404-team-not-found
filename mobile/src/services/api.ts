@@ -58,6 +58,7 @@ export const authApi = {
     email: string;
     phone?: string;
     password: string;
+    referralCode?: string;
   }) => api.post<AuthResponse>('/auth/register', data).then(r => r.data),
 
   login: (email: string, password: string) =>
