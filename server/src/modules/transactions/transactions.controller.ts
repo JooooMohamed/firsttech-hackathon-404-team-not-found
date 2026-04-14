@@ -51,18 +51,19 @@ export class TransactionsController {
   @Get("my")
   getMyTransactions(
     @Request() req: any,
+    @Query("cursor") cursor?: string,
     @Query("page") page?: string,
     @Query("limit") limit?: string,
     @Query("startDate") startDate?: string,
     @Query("endDate") endDate?: string,
   ) {
-    return this.transactionsService.getByUserId(
-      req.user._id,
-      parseInt(page || "1", 10),
-      parseInt(limit || "50", 10),
+    return this.transactionsService.getByUserId(req.user._id, {
+      cursor,
+      limit: parseInt(limit || "20", 10),
+      page: page ? parseInt(page, 10) : undefined,
       startDate,
       endDate,
-    );
+    });
   }
 
   // ── merchant/:id specific routes before general merchant/:id ──
@@ -90,13 +91,14 @@ export class TransactionsController {
   @Roles("staff", "admin")
   getMerchantTransactions(
     @Param("id") id: string,
+    @Query("cursor") cursor?: string,
     @Query("page") page?: string,
     @Query("limit") limit?: string,
   ) {
-    return this.transactionsService.getByMerchantId(
-      id,
-      parseInt(page || "1", 10),
-      parseInt(limit || "50", 10),
-    );
+    return this.transactionsService.getByMerchantId(id, {
+      cursor,
+      limit: parseInt(limit || "20", 10),
+      page: page ? parseInt(page, 10) : undefined,
+    });
   }
 }

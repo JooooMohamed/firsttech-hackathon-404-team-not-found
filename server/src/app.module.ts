@@ -13,6 +13,14 @@ import { TransactionsModule } from "./modules/transactions/transactions.module";
 import { QrModule } from "./modules/qr/qr.module";
 import { SeedModule } from "./modules/seed/seed.module";
 import { OffersModule } from "./modules/offers/offers.module";
+import { EventsModule } from "./modules/events/events.module";
+import { AuditModule } from "./modules/audit/audit.module";
+import { AdminModule } from "./modules/admin/admin.module";
+import { TiersModule } from "./modules/tiers/tiers.module";
+import { ExchangeModule } from "./modules/exchange/exchange.module";
+import { CampaignsModule } from "./modules/campaigns/campaigns.module";
+import { PushModule } from "./modules/push/push.module";
+import { FlagsModule } from "./modules/flags/flags.module";
 
 @Module({
   imports: [
@@ -39,6 +47,14 @@ import { OffersModule } from "./modules/offers/offers.module";
     QrModule,
     SeedModule,
     OffersModule,
+    EventsModule,
+    AuditModule,
+    AdminModule,
+    TiersModule,
+    ExchangeModule,
+    CampaignsModule,
+    PushModule,
+    FlagsModule,
   ],
   providers: [
     // Apply throttling globally

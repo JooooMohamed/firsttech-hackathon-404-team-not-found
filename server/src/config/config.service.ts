@@ -43,4 +43,36 @@ export class ConfigService {
   get port(): number {
     return parseInt(process.env.PORT || "3000", 10);
   }
+
+  get qrHmacSecret(): string {
+    return process.env.QR_HMAC_SECRET || this.jwtSecret;
+  }
+
+  get smtpHost(): string {
+    return process.env.SMTP_HOST || "";
+  }
+
+  get smtpPort(): number {
+    return parseInt(process.env.SMTP_PORT || "587", 10);
+  }
+
+  get smtpUser(): string {
+    return process.env.SMTP_USER || "";
+  }
+
+  get smtpPass(): string {
+    return process.env.SMTP_PASS || "";
+  }
+
+  get emailFrom(): string {
+    return process.env.EMAIL_FROM || "noreply@easypoints.app";
+  }
+
+  get corsOrigins(): string[] {
+    const origins = process.env.CORS_ORIGINS;
+    if (!origins) {
+      return []; // empty = allow all in dev via the origin callback
+    }
+    return origins.split(",").map((o) => o.trim()).filter(Boolean);
+  }
 }

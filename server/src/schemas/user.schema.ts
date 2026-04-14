@@ -31,6 +31,12 @@ export class User {
 
   @Prop({ unique: true, sparse: true })
   referralCode: string;
+
+  @Prop({ default: "Bronze" })
+  tier: string;
+
+  @Prop({ default: 0 })
+  lifetimeEP: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

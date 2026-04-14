@@ -1,0 +1,109 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "done": "Done",
+    "search": "Search",
+    "noResults": "No results found",
+    "logout": "Sign Out",
+    "aed": "AED",
+    "ep": "EP"
+  },
+  "auth": {
+    "login": "Sign In",
+    "register": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "referralCode": "Referral Code",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "biometricLogin": "Sign in with Biometrics",
+    "magicLink": "Sign in with Email Link",
+    "checkEmail": "Check your email for a sign-in link",
+    "demoAccounts": "Demo Accounts"
+  },
+  "home": {
+    "greeting": "Hello, {{name}}",
+    "totalValue": "Estimated Total Value",
+    "easyPoints": "EasyPoints",
+    "myQR": "My QR Code",
+    "walletBreakdown": "Wallet Breakdown",
+    "linkedPrograms": "Linked Programs",
+    "recentActivity": "Recent Activity",
+    "yourMonth": "Your Month",
+    "earned": "Earned",
+    "redeemed": "Redeemed",
+    "transactions": "Transactions",
+    "topMerchant": "Top Merchant",
+    "quickActions": "Quick Actions",
+    "registerBusiness": "Register Business",
+    "linkPrograms": "Link Programs",
+    "tapToEarn": "Tap to Earn"
+  },
+  "merchants": {
+    "directory": "Merchant Directory",
+    "searchPlaceholder": "Search merchants...",
+    "earnRate": "Earn Rate",
+    "minSpend": "Min Spend",
+    "categories": "Categories",
+    "allCategories": "All",
+    "noMerchants": "No merchants found"
+  },
+  "offers": {
+    "title": "Offers",
+    "active": "Active Offers",
+    "bonus": "Bonus",
+    "discount": "Discount",
+    "freebie": "Freebie",
+    "endsIn": "Ends in",
+    "noOffers": "No active offers"
+  },
+  "transactions": {
+    "history": "Transaction History",
+    "earn": "Earn",
+    "redeem": "Redeem",
+    "all": "All",
+    "last7d": "7 Days",
+    "last30d": "30 Days",
+    "last90d": "90 Days",
+    "allTime": "All Time",
+    "export": "Export CSV",
+    "noTransactions": "No transactions yet"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "security": "Security",
+    "biometric": "Biometric Unlock",
+    "language": "Language",
+    "about": "About",
+    "version": "App Version",
+    "dataConsent": "Data Consent",
+    "revokeConsent": "Revoke Data Consent"
+  },
+  "tiers": {
+    "bronze": "Bronze",
+    "silver": "Silver",
+    "gold": "Gold",
+    "platinum": "Platinum",
+    "currentTier": "Current Tier",
+    "nextTier": "Next Tier",
+    "progress": "Progress",
+    "pointsNeeded": "{{points}} EP to next tier"
+  },
+  "nfc": {
+    "tapToEarn": "Tap to Earn",
+    "holdNear": "Hold your phone near the terminal",
+    "reading": "Reading NFC...",
+    "notSupported": "NFC not supported on this device"
+  }
+}

@@ -7,16 +7,19 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { MerchantDocument } from "../../schemas/merchant.schema";
 import { UserDocument } from "../../schemas/user.schema";
+import { StaffAssignmentDocument } from "../../schemas/staff-assignment.schema";
 
 @Injectable()
 export class MerchantsService {
   constructor(
     @InjectModel("Merchant") private merchantModel: Model<MerchantDocument>,
     @InjectModel("User") private userModel: Model<UserDocument>,
+    @InjectModel("StaffAssignment") private staffAssignmentModel: Model<StaffAssignmentDocument>,
   ) {}
 
-  async findAll() {
-    return this.merchantModel.find();
+  async findAll(includeAll = false) {
+    if (includeAll) return this.merchantModel.find();
+    return this.merchantModel.find({ $or: [{ status: "ACTIVE" }, { status: { $exists: false } }] });
   }
 
   async findById(id: string) {
@@ -58,6 +61,14 @@ export class MerchantsService {
     const merchant = await this.merchantModel.create({
       ...dto,
       ownerId: userId,
+      status: "ONBOARDING",
+    });
+
+    // Create staff assignment record (owner role)
+    await this.staffAssignmentModel.create({
+      userId,
+      merchantId: merchant._id,
+      role: "owner",
     });
 
     // Upgrade user: add "staff" role + link to new merchant
@@ -98,6 +109,13 @@ export class MerchantsService {
         { new: true },
       )
       .select("-password");
+
+    // Create staff assignment record
+    await this.staffAssignmentModel.findOneAndUpdate(
+      { userId: staffUser._id, merchantId },
+      { userId: staffUser._id, merchantId, role: "staff" },
+      { upsert: true },
+    );
 
     return updated;
   }
@@ -143,5 +161,34 @@ export class MerchantsService {
       .find({ merchantId })
       .select("-password")
       .sort({ name: 1 });
+  }
+
+  // B6: Get all merchants a user is assigned to
+  async getMyAssignments(userId: string) {
+    const assignments = await this.staffAssignmentModel
+      .find({ userId })
+      .populate("merchantId");
+    return assignments.map((a) => ({
+      merchant: a.merchantId,
+      role: a.role,
+      assignedAt: (a as any).createdAt,
+    }));
+  }
+
+  // B6: Switch active merchant for a user
+  async switchMerchant(userId: string, merchantId: string) {
+    const assignment = await this.staffAssignmentModel.findOne({
+      userId,
+      merchantId,
+    });
+    if (!assignment) {
+      throw new BadRequestException("You are not assigned to this merchant");
+    }
+
+    const user = await this.userModel
+      .findByIdAndUpdate(userId, { merchantId }, { new: true })
+      .select("-password");
+
+    return user;
   }
 }

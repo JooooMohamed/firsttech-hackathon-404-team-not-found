@@ -32,6 +32,12 @@ export class Merchant {
   @Prop({ default: true })
   crossSmeRedemption: boolean; // allow redeem with points earned elsewhere
 
+  @Prop({ default: "ACTIVE", enum: ["ACTIVE", "PAUSED", "ONBOARDING"] })
+  status: string;
+
+  @Prop({ type: Types.ObjectId, ref: "ProgramCatalog", default: null })
+  partnerProgramId: Types.ObjectId; // links merchant to an external loyalty program for dual earning
+
   @Prop({ type: Types.ObjectId, ref: "User", required: true })
   ownerId: Types.ObjectId;
 }

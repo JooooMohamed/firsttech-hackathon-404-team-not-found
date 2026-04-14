@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  Query,
   UseGuards,
   Request,
   UsePipes,
@@ -22,8 +23,8 @@ export class MerchantsController {
   constructor(private merchantsService: MerchantsService) {}
 
   @Get()
-  findAll() {
-    return this.merchantsService.findAll();
+  findAll(@Query("includeAll") includeAll?: string) {
+    return this.merchantsService.findAll(includeAll === "true");
   }
 
   @Get(":id")
@@ -49,6 +50,23 @@ export class MerchantsController {
     @Body(new JoiValidationPipe(UpdateMerchantDto)) body: any,
   ) {
     return this.merchantsService.update(id, body, req.user);
+  }
+
+  // B6: Get all merchants the user is assigned to
+  @Get("my-assignments")
+  @UseGuards(JwtAuthGuard)
+  getMyAssignments(@Request() req: any) {
+    return this.merchantsService.getMyAssignments(req.user._id);
+  }
+
+  // B6: Switch active merchant
+  @Post("switch/:merchantId")
+  @UseGuards(JwtAuthGuard)
+  switchMerchant(
+    @Request() req: any,
+    @Param("merchantId") merchantId: string,
+  ) {
+    return this.merchantsService.switchMerchant(req.user._id, merchantId);
   }
 
   // C1: Self-service merchant onboarding

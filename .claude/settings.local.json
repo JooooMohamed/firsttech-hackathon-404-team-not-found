@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); print\\(data[0]['text'][:8000]\\)\")",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); print\\(data[0]['text'][8000:16000]\\)\")",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); print\\(data[0]['text'][16000:24000]\\)\")",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); print\\(data[0]['text'][24000:32000]\\)\")",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); print\\(data[0]['text'][32000:]\\)\")",
+      "Bash(pnpm --version)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm ls:*)",
+      "Bash(pnpm --filter easypoints-server build)",
+      "Bash(pnpm --filter easypoints-server add -D @nestjs/testing jest ts-jest @types/jest)",
+      "Bash(pnpm --filter easypoints-server test)",
+      "Bash(pnpm --filter easypoints-server add -D ts-node)",
+      "Bash(ls -1 /Users/youssefelghzaly/Developer/EasyPoints/*.md)",
+      "Bash(pnpm --filter easypoints-server add nanoid@3)",
+      "Bash(pnpm --filter easypoints-server add nodemailer)",
+      "Bash(pnpm --filter easypoints-server add -D @types/nodemailer)",
+      "Bash(pnpm --filter easypoints-server add @nestjs/websockets @nestjs/platform-socket.io socket.io)",
+      "Bash(pnpm dev:server)",
+      "Bash(curl -s http://localhost:3000/api)",
+      "Bash(curl -s http://localhost:3000/api/programs/catalog)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(f'Server is UP — {len\\(d\\)} programs in catalog'\\)\")",
+      "Bash(npx react-native:*)",
+      "Bash(pnpm add:*)",
+      "Bash(python3 -c \"import json,sys;print\\(json.load\\(sys.stdin\\)['version']\\)\")"
+    ]
+  }
+}

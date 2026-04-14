@@ -4,8 +4,16 @@ import { Model, Types } from "mongoose";
 import { TransactionDocument } from "../../schemas/transaction.schema";
 import { QrSessionDocument } from "../../schemas/qr-session.schema";
 import { OfferDocument } from "../../schemas/offer.schema";
+import { UserDocument } from "../../schemas/user.schema";
 import { WalletsService } from "../wallets/wallets.service";
 import { MerchantsService } from "../merchants/merchants.service";
+import {
+  buildCursorFilter,
+  buildCursorResult,
+  CursorPaginatedResult,
+} from "../../common/cursor-pagination";
+import { EventsService, EVENTS } from "../events/events.service";
+import { TiersService } from "../tiers/tiers.service";
 
 @Injectable()
 export class TransactionsService {
@@ -16,8 +24,14 @@ export class TransactionsService {
     private qrSessionModel: Model<QrSessionDocument>,
     @InjectModel("Offer")
     private offerModel: Model<OfferDocument>,
+    @InjectModel("User")
+    private userModel: Model<UserDocument>,
+    @InjectModel("LinkedProgram")
+    private linkedProgramModel: Model<any>,
     private walletsService: WalletsService,
     private merchantsService: MerchantsService,
+    private eventsService: EventsService,
+    private tiersService: TiersService,
   ) {}
 
   async earn(dto: {
@@ -27,6 +41,11 @@ export class TransactionsService {
     qrToken?: string;
   }) {
     const merchant = await this.merchantsService.findById(dto.merchantId);
+
+    // Check merchant is active
+    if (merchant.status === "PAUSED") {
+      throw new BadRequestException("This merchant is currently paused and cannot process transactions");
+    }
 
     // Enforce integer AED amounts
     const amountAed = Math.floor(dto.amountAed);
@@ -99,29 +118,74 @@ export class TransactionsService {
       await session.save();
     }
 
+    // Apply tier multiplier
+    const tierMultiplier = this.tiersService.getTierMultiplier(
+      (await this.userModel.findById(userId))?.lifetimeEP || 0,
+    );
+    const tierBonus = tierMultiplier > 1 ? Math.floor(points * (tierMultiplier - 1)) : 0;
+    const finalPoints = points + tierBonus;
+
     // Update global wallet (null merchantId)
-    await this.walletsService.addPoints(userId, null, points);
+    await this.walletsService.addPoints(userId, null, finalPoints);
+
+    // Track lifetime EP and check for tier upgrade
+    await this.userModel.findByIdAndUpdate(userId, { $inc: { lifetimeEP: finalPoints } });
+    const tierUpgrade = await this.tiersService.checkAndUpgradeTier(userId);
 
     // Create transaction
     const transaction = await this.transactionModel.create({
       userId: new Types.ObjectId(userId),
       merchantId: new Types.ObjectId(dto.merchantId),
       type: "earn",
-      points,
+      points: finalPoints,
       amountAed: amountAed,
       reference: dto.qrToken,
     });
 
-    return {
+    // C3: Dual earning — also credit partner program if merchant is linked
+    let dualEarnInfo: any = undefined;
+    if (merchant.partnerProgramId) {
+      try {
+        const linkedProgram = await this.linkedProgramModel?.findOne({
+          userId: new Types.ObjectId(userId),
+          programName: { $exists: true },
+        });
+        // Credit partner program balance (simulated — real API in future)
+        if (linkedProgram) {
+          const partnerPoints = Math.floor(amountAed * (linkedProgram.aedRate || 0.01) * 100);
+          if (partnerPoints > 0) {
+            linkedProgram.balance += partnerPoints;
+            await linkedProgram.save();
+            dualEarnInfo = {
+              programName: linkedProgram.programName,
+              partnerPoints,
+              currency: linkedProgram.currency,
+            };
+          }
+        }
+      } catch (_) {}
+    }
+
+    const result = {
       transaction,
       pointsEarned: basePoints,
       bonusPoints: bonusPoints > 0 ? bonusPoints : undefined,
-      totalPoints: points,
+      tierBonus: tierBonus > 0 ? tierBonus : undefined,
+      totalPoints: finalPoints,
       amountAed: amountAed,
       earnRate: merchant.earnRate,
       appliedOffers: appliedOffers.length > 0 ? appliedOffers : undefined,
       offerMultiplier: offerMultiplier > 1 ? offerMultiplier : undefined,
+      tierMultiplier: tierMultiplier > 1 ? tierMultiplier : undefined,
+      tierUpgrade: tierUpgrade.upgraded ? tierUpgrade.newTier : undefined,
+      dualEarn: dualEarnInfo,
     };
+
+    // Emit real-time events
+    this.eventsService.emitToUser(userId, EVENTS.TRANSACTION_COMPLETED, result);
+    this.eventsService.emitToMerchant(dto.merchantId, EVENTS.TRANSACTION_COMPLETED, result);
+
+    return result;
   }
 
   async redeem(dto: {
@@ -131,6 +195,11 @@ export class TransactionsService {
     qrToken?: string;
   }) {
     const merchant = await this.merchantsService.findById(dto.merchantId);
+
+    // Check merchant is active
+    if (merchant.status === "PAUSED") {
+      throw new BadRequestException("This merchant is currently paused and cannot process transactions");
+    }
 
     if (!merchant.redemptionEnabled) {
       throw new BadRequestException("Redemption not enabled for this merchant");
@@ -206,36 +275,57 @@ export class TransactionsService {
       reference: dto.qrToken,
     });
 
-    return {
-      transaction,
-      pointsRedeemed: dto.points,
-    };
+    const redeemResult = { transaction, pointsRedeemed: dto.points };
+
+    // Emit real-time events
+    this.eventsService.emitToUser(userId, EVENTS.TRANSACTION_COMPLETED, redeemResult);
+    this.eventsService.emitToMerchant(dto.merchantId, EVENTS.TRANSACTION_COMPLETED, redeemResult);
+
+    return redeemResult;
   }
 
   async getByUserId(
     userId: string,
-    page = 1,
-    limit = 50,
-    startDate?: string,
-    endDate?: string,
-  ) {
-    const skip = (page - 1) * limit;
-    const filter: any = { userId: new Types.ObjectId(userId) };
-    if (startDate || endDate) {
-      filter.createdAt = {};
-      if (startDate) filter.createdAt.$gte = new Date(startDate);
-      if (endDate) {
-        const end = new Date(endDate);
+    options: {
+      cursor?: string;
+      limit?: number;
+      page?: number; // legacy fallback
+      startDate?: string;
+      endDate?: string;
+    } = {},
+  ): Promise<CursorPaginatedResult<any>> {
+    const limit = Math.min(Math.max(options.limit || 20, 1), 100);
+    const baseFilter: any = { userId: new Types.ObjectId(userId) };
+    if (options.startDate || options.endDate) {
+      baseFilter.createdAt = {};
+      if (options.startDate) baseFilter.createdAt.$gte = new Date(options.startDate);
+      if (options.endDate) {
+        const end = new Date(options.endDate);
         end.setHours(23, 59, 59, 999);
-        filter.createdAt.$lte = end;
+        baseFilter.createdAt.$lte = end;
       }
     }
-    return this.transactionModel
+
+    // Legacy offset fallback
+    if (!options.cursor && options.page) {
+      const skip = (options.page - 1) * limit;
+      const items = await this.transactionModel
+        .find(baseFilter)
+        .populate("merchantId", "name logo")
+        .sort({ _id: -1 })
+        .skip(skip)
+        .limit(limit);
+      return { items, nextCursor: null, hasMore: false };
+    }
+
+    const filter = buildCursorFilter(baseFilter, options.cursor, -1);
+    const items = await this.transactionModel
       .find(filter)
       .populate("merchantId", "name logo")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+      .sort({ _id: -1 })
+      .limit(limit + 1);
+
+    return buildCursorResult(items, limit);
   }
 
   // Member Insights — month EP earned / redeemed / top merchant / txn count
@@ -294,14 +384,32 @@ export class TransactionsService {
     return { earned, redeemed, txCount, topMerchant };
   }
 
-  async getByMerchantId(merchantId: string, page = 1, limit = 50) {
-    const skip = (page - 1) * limit;
-    return this.transactionModel
-      .find({ merchantId: new Types.ObjectId(merchantId) })
+  async getByMerchantId(
+    merchantId: string,
+    options: { cursor?: string; limit?: number; page?: number } = {},
+  ): Promise<CursorPaginatedResult<any>> {
+    const limit = Math.min(Math.max(options.limit || 20, 1), 100);
+    const baseFilter = { merchantId: new Types.ObjectId(merchantId) };
+
+    if (!options.cursor && options.page) {
+      const skip = (options.page - 1) * limit;
+      const items = await this.transactionModel
+        .find(baseFilter)
+        .populate("userId", "name email")
+        .sort({ _id: -1 })
+        .skip(skip)
+        .limit(limit);
+      return { items, nextCursor: null, hasMore: false };
+    }
+
+    const filter = buildCursorFilter(baseFilter, options.cursor, -1);
+    const items = await this.transactionModel
+      .find(filter)
       .populate("userId", "name email")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+      .sort({ _id: -1 })
+      .limit(limit + 1);
+
+    return buildCursorResult(items, limit);
   }
 
   async getMerchantStats(merchantId: string) {

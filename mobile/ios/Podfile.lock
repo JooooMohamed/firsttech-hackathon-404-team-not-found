@@ -1061,13 +1061,13 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - RNCAsyncStorage (1.23.1):
+  - RNCAsyncStorage (1.24.0):
     - React-Core
   - RNScreens (3.29.0):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - RNSVG (15.11.2):
+  - RNSVG (15.2.0):
     - React-Core
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
@@ -1257,7 +1257,7 @@ SPEC CHECKSUMS:
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: b361c9ef5ef3cda53f66e195599b47e1f84ffa35
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
+  RCT-Folly: cd21f1661364f975ae76b3308167ad66b09f53f5
   RCTRequired: 9b1e7e262745fb671e33c51c1078d093bd30e322
   RCTTypeSafety: a759e3b086eccf3e2cbf2493d22f28e082f958e6
   React: 805f5dd55bbdb92c36b4914c64aaae4c97d358dc
@@ -1301,9 +1301,9 @@ SPEC CHECKSUMS:
   React-utils: dd1e04ea7105dc58637939b50f1a74a5dd634ec4
   ReactCommon: 35e3b6a1c75d462acb0155e38e627b98d5bf586b
   ReactNativeCameraKit: e876ae8852760c55347dd48d012d6a17176fa654
-  RNCAsyncStorage: aa75595c1aefa18f868452091fa0c411a516ce11
+  RNCAsyncStorage: b6410dead2732b5c72a7fdb1ecb5651bbcf4674b
   RNScreens: 8d1521c6e375a79dbd4525efaf21704cc64ac0cf
-  RNSVG: 36ab724902de0406127ef8d63d940c055e2a1442
+  RNSVG: 0e7deccab0678200815104223aadd5ca734dd41d
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 13c8ef87792450193e117976337b8527b49e8c03
 

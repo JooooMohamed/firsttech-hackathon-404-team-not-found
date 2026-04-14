@@ -1,0 +1,20 @@
+{
+  "name": "easypoints",
+  "version": "0.1.0",
+  "private": true,
+  "description": "EasyPoints — Unified Loyalty Platform for the UAE",
+  "scripts": {
+    "dev:server": "pnpm --filter easypoints-server start:dev",
+    "dev:mobile": "cd mobile && npx react-native start",
+    "build": "pnpm --filter easypoints-server build",
+    "build:shared": "pnpm --filter @easypoints/shared build",
+    "test": "pnpm --filter easypoints-server test",
+    "test:server": "pnpm --filter easypoints-server test",
+    "lint": "pnpm --filter EasyPoints lint",
+    "clean": "pnpm -r exec -- rm -rf node_modules dist"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  }
+}

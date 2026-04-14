@@ -1,0 +1,109 @@
+{
+  "common": {
+    "loading": "جارٍ التحميل...",
+    "error": "حدث خطأ",
+    "retry": "إعادة المحاولة",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "done": "تم",
+    "search": "بحث",
+    "noResults": "لا توجد نتائج",
+    "logout": "تسجيل الخروج",
+    "aed": "د.إ",
+    "ep": "نقطة"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "name": "الاسم الكامل",
+    "phone": "رقم الهاتف",
+    "referralCode": "رمز الإحالة",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "noAccount": "ليس لديك حساب؟",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "biometricLogin": "تسجيل الدخول بالبصمة",
+    "magicLink": "تسجيل الدخول برابط البريد",
+    "checkEmail": "تحقق من بريدك الإلكتروني",
+    "demoAccounts": "حسابات تجريبية"
+  },
+  "home": {
+    "greeting": "مرحباً، {{name}}",
+    "totalValue": "القيمة الإجمالية المقدرة",
+    "easyPoints": "إيزي بوينتس",
+    "myQR": "رمز QR الخاص بي",
+    "walletBreakdown": "تفصيل المحفظة",
+    "linkedPrograms": "البرامج المرتبطة",
+    "recentActivity": "النشاط الأخير",
+    "yourMonth": "شهرك",
+    "earned": "مكتسب",
+    "redeemed": "مستبدل",
+    "transactions": "المعاملات",
+    "topMerchant": "أفضل تاجر",
+    "quickActions": "إجراءات سريعة",
+    "registerBusiness": "سجل عملك",
+    "linkPrograms": "ربط البرامج",
+    "tapToEarn": "اضغط للكسب"
+  },
+  "merchants": {
+    "directory": "دليل التجار",
+    "searchPlaceholder": "ابحث عن التجار...",
+    "earnRate": "معدل الكسب",
+    "minSpend": "الحد الأدنى للإنفاق",
+    "categories": "الفئات",
+    "allCategories": "الكل",
+    "noMerchants": "لم يتم العثور على تجار"
+  },
+  "offers": {
+    "title": "العروض",
+    "active": "العروض النشطة",
+    "bonus": "مكافأة",
+    "discount": "خصم",
+    "freebie": "مجاني",
+    "endsIn": "ينتهي في",
+    "noOffers": "لا توجد عروض نشطة"
+  },
+  "transactions": {
+    "history": "سجل المعاملات",
+    "earn": "كسب",
+    "redeem": "استبدال",
+    "all": "الكل",
+    "last7d": "٧ أيام",
+    "last30d": "٣٠ يوم",
+    "last90d": "٩٠ يوم",
+    "allTime": "كل الوقت",
+    "export": "تصدير CSV",
+    "noTransactions": "لا توجد معاملات بعد"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "profile": "الملف الشخصي",
+    "security": "الأمان",
+    "biometric": "فتح بالبصمة",
+    "language": "اللغة",
+    "about": "حول التطبيق",
+    "version": "إصدار التطبيق",
+    "dataConsent": "موافقة البيانات",
+    "revokeConsent": "سحب موافقة البيانات"
+  },
+  "tiers": {
+    "bronze": "برونزي",
+    "silver": "فضي",
+    "gold": "ذهبي",
+    "platinum": "بلاتيني",
+    "currentTier": "المستوى الحالي",
+    "nextTier": "المستوى التالي",
+    "progress": "التقدم",
+    "pointsNeeded": "{{points}} نقطة للمستوى التالي"
+  },
+  "nfc": {
+    "tapToEarn": "اضغط للكسب",
+    "holdNear": "أمسك هاتفك بالقرب من الجهاز",
+    "reading": "جارٍ قراءة NFC...",
+    "notSupported": "NFC غير مدعوم على هذا الجهاز"
+  }
+}

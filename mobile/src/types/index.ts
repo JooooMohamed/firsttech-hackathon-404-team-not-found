@@ -9,10 +9,14 @@ export interface User {
   consentGiven: boolean;
   consentGivenAt?: string | null;
   referralCode?: string;
+  tier?: string;
+  lifetimeEP?: number;
   createdAt: string;
 }
 
 export type ActiveRole = 'member' | 'staff' | 'admin' | 'merchant';
+
+export type MerchantStatus = 'ACTIVE' | 'PAUSED' | 'ONBOARDING';
 
 // ── Merchant ──────────────────────────────────────────
 export interface Merchant {
@@ -26,6 +30,7 @@ export interface Merchant {
   bonusMultiplier: number;
   redemptionEnabled: boolean;
   crossSmeRedemption: boolean;
+  status?: MerchantStatus;
   ownerId: string;
   createdAt: string;
 }
@@ -87,6 +92,7 @@ export interface QrSession {
   expiresAt: string;
   createdAt: string;
   easyPointsBalance?: number;
+  hmacPayload?: any;
 }
 
 // ── API Response ──────────────────────────────────────
@@ -98,8 +104,12 @@ export interface AuthResponse {
 export interface EarnResponse {
   transaction: Transaction;
   pointsEarned: number;
+  bonusPoints?: number;
+  totalPoints?: number;
   amountAed: number;
   earnRate: number;
+  appliedOffers?: string[];
+  offerMultiplier?: number;
 }
 
 export interface RedeemResponse {
@@ -144,4 +154,11 @@ export interface AppNotification {
   subtitle: string;
   time: string;
   read: boolean;
+}
+
+// ── Cursor Pagination ─────────────────────────────────
+export interface CursorPaginatedResponse<T> {
+  items: T[];
+  nextCursor: string | null;
+  hasMore: boolean;
 }

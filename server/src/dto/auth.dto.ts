@@ -17,3 +17,11 @@ export const LoginDto = Joi.object({
 export const ConsentDto = Joi.object({
   consentGiven: Joi.boolean().required(),
 });
+
+export const MagicLinkRequestDto = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+export const MagicLinkVerifyDto = Joi.object({
+  token: Joi.string().required(),
+});

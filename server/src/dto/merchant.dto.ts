@@ -22,4 +22,5 @@ export const UpdateMerchantDto = Joi.object({
   bonusMultiplier: Joi.number().min(1).max(10).optional(),
   redemptionEnabled: Joi.boolean().optional(),
   crossSmeRedemption: Joi.boolean().optional(),
+  status: Joi.string().valid("ACTIVE", "PAUSED", "ONBOARDING").optional(),
 });

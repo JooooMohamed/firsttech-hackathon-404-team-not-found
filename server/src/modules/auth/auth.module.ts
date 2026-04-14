@@ -7,8 +7,10 @@ import { AuthService } from "./auth.service";
 import { JwtStrategy } from "./jwt.strategy";
 import { UserSchema } from "../../schemas/user.schema";
 import { WalletSchema } from "../../schemas/wallet.schema";
+import { MagicLinkSchema } from "../../schemas/magic-link.schema";
 import { ConfigModule } from "../../config/config.module";
 import { ConfigService } from "../../config/config.service";
+import { EmailModule } from "../email/email.module";
 
 @Module({
   imports: [
@@ -24,7 +26,9 @@ import { ConfigService } from "../../config/config.service";
     MongooseModule.forFeature([
       { name: "User", schema: UserSchema },
       { name: "Wallet", schema: WalletSchema },
+      { name: "MagicLink", schema: MagicLinkSchema },
     ]),
+    EmailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
