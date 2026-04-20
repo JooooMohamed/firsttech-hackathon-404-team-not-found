@@ -1,0 +1,15 @@
+appId: com.easypoints
+---
+# Test: Staff stats screen loads
+- runFlow: ../helpers/login_staff.yaml
+- waitForAnimationToEnd
+
+# Switch to Staff role
+- runFlow: ../helpers/switch_to_staff.yaml
+
+# Navigate to Stats tab
+- tapOn: 'Stats'
+- waitForAnimationToEnd
+
+# Verify stats screen
+- assertVisible: 'Transaction Statistics'

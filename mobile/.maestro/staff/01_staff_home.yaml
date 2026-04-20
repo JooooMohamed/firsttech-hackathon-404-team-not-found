@@ -1,0 +1,18 @@
+appId: com.easypoints
+---
+# Test: Staff home screen loads after login & role switch
+- runFlow: ../helpers/login_staff.yaml
+
+# Wait for home screen (logged in as member by default)
+- waitForAnimationToEnd
+
+# Switch to Staff role via the role bar
+- runFlow: ../helpers/switch_to_staff.yaml
+
+# Verify staff mode UI
+- assertVisible: '🏷️ Staff Mode'
+
+# Verify staff home elements
+- assertVisible: 'Home'
+- assertVisible: 'Stats'
+- assertVisible: 'Settings'

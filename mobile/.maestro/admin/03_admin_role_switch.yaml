@@ -1,0 +1,22 @@
+appId: com.easypoints
+---
+# Test: Admin role switching (admin → member → admin)
+- runFlow: ../helpers/login_admin.yaml
+- waitForAnimationToEnd
+
+# Switch to Admin role
+- runFlow: ../helpers/switch_to_admin.yaml
+
+# Verify admin dashboard
+- assertVisible: 'Admin Dashboard'
+
+# Switch to Member role via role switcher button
+- tapOn: '🔄 Switch Role'
+- waitForAnimationToEnd
+
+# Tap Member in the role switcher modal
+- tapOn: 'Member'
+- waitForAnimationToEnd
+
+# Should see member home
+- assertVisible: 'Your loyalty, unified'

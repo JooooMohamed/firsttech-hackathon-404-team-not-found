@@ -1,0 +1,17 @@
+appId: com.easypoints
+---
+# Test: Offers screen loads and displays promotions
+- runFlow: ../helpers/login_member.yaml
+
+# Navigate to Offers tab
+- tapOn: 'Offers'
+- waitForAnimationToEnd
+
+# Verify offers screen
+- assertVisible: 'Active deals from partner merchants'
+
+# Pull to refresh
+- swipe:
+    start: 50%, 30%
+    end: 50%, 70%
+- waitForAnimationToEnd

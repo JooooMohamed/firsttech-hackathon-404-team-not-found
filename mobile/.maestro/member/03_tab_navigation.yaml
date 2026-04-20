@@ -1,0 +1,27 @@
+appId: com.easypoints
+---
+# Test: Member tab navigation works
+- runFlow: ../helpers/login_member.yaml
+
+# Verify starting on Home tab
+- assertVisible: 'Your loyalty, unified'
+
+# Navigate to Merchants tab
+- tapOn: 'Merchants'
+- waitForAnimationToEnd
+- assertVisible: 'Earn & redeem EasyPoints'
+
+# Navigate to Activity tab
+- tapOn: 'Activity'
+- waitForAnimationToEnd
+- assertVisible: 'Transaction History'
+
+# Navigate to Offers tab
+- tapOn: 'Offers'
+- waitForAnimationToEnd
+- assertVisible: 'Active deals from partner merchants'
+
+# Navigate back to Home tab
+- tapOn: 'Home'
+- waitForAnimationToEnd
+- assertVisible: 'Your loyalty, unified'

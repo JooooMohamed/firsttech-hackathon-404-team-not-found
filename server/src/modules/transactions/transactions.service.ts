@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from "@nestjs/common";
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { TransactionDocument } from "../../schemas/transaction.schema";
@@ -39,12 +43,24 @@ export class TransactionsService {
     userId: string;
     amountAed: number;
     qrToken?: string;
+    idempotencyKey?: string;
+    staffId?: string;
   }) {
+    // Idempotency: return existing transaction if key was already used
+    if (dto.idempotencyKey) {
+      const existing = await this.transactionModel.findOne({
+        idempotencyKey: dto.idempotencyKey,
+      });
+      if (existing) return { transaction: existing, duplicate: true };
+    }
+
     const merchant = await this.merchantsService.findById(dto.merchantId);
 
     // Check merchant is active
     if (merchant.status === "PAUSED") {
-      throw new BadRequestException("This merchant is currently paused and cannot process transactions");
+      throw new BadRequestException(
+        "This merchant is currently paused and cannot process transactions",
+      );
     }
 
     // Enforce integer AED amounts
@@ -122,14 +138,17 @@ export class TransactionsService {
     const tierMultiplier = this.tiersService.getTierMultiplier(
       (await this.userModel.findById(userId))?.lifetimeEP || 0,
     );
-    const tierBonus = tierMultiplier > 1 ? Math.floor(points * (tierMultiplier - 1)) : 0;
+    const tierBonus =
+      tierMultiplier > 1 ? Math.floor(points * (tierMultiplier - 1)) : 0;
     const finalPoints = points + tierBonus;
 
     // Update global wallet (null merchantId)
     await this.walletsService.addPoints(userId, null, finalPoints);
 
     // Track lifetime EP and check for tier upgrade
-    await this.userModel.findByIdAndUpdate(userId, { $inc: { lifetimeEP: finalPoints } });
+    await this.userModel.findByIdAndUpdate(userId, {
+      $inc: { lifetimeEP: finalPoints },
+    });
     const tierUpgrade = await this.tiersService.checkAndUpgradeTier(userId);
 
     // Create transaction
@@ -140,6 +159,7 @@ export class TransactionsService {
       points: finalPoints,
       amountAed: amountAed,
       reference: dto.qrToken,
+      idempotencyKey: dto.idempotencyKey || null,
     });
 
     // C3: Dual earning — also credit partner program if merchant is linked
@@ -152,7 +172,9 @@ export class TransactionsService {
         });
         // Credit partner program balance (simulated — real API in future)
         if (linkedProgram) {
-          const partnerPoints = Math.floor(amountAed * (linkedProgram.aedRate || 0.01) * 100);
+          const partnerPoints = Math.floor(
+            amountAed * (linkedProgram.aedRate || 0.01) * 100,
+          );
           if (partnerPoints > 0) {
             linkedProgram.balance += partnerPoints;
             await linkedProgram.save();
@@ -183,7 +205,11 @@ export class TransactionsService {
 
     // Emit real-time events
     this.eventsService.emitToUser(userId, EVENTS.TRANSACTION_COMPLETED, result);
-    this.eventsService.emitToMerchant(dto.merchantId, EVENTS.TRANSACTION_COMPLETED, result);
+    this.eventsService.emitToMerchant(
+      dto.merchantId,
+      EVENTS.TRANSACTION_COMPLETED,
+      result,
+    );
 
     return result;
   }
@@ -193,12 +219,24 @@ export class TransactionsService {
     userId: string;
     points: number;
     qrToken?: string;
+    idempotencyKey?: string;
+    staffId?: string;
   }) {
+    // Idempotency: return existing transaction if key was already used
+    if (dto.idempotencyKey) {
+      const existing = await this.transactionModel.findOne({
+        idempotencyKey: dto.idempotencyKey,
+      });
+      if (existing) return { transaction: existing, duplicate: true };
+    }
+
     const merchant = await this.merchantsService.findById(dto.merchantId);
 
     // Check merchant is active
     if (merchant.status === "PAUSED") {
-      throw new BadRequestException("This merchant is currently paused and cannot process transactions");
+      throw new BadRequestException(
+        "This merchant is currently paused and cannot process transactions",
+      );
     }
 
     if (!merchant.redemptionEnabled) {
@@ -273,13 +311,22 @@ export class TransactionsService {
       points: dto.points,
       amountAed: null,
       reference: dto.qrToken,
+      idempotencyKey: dto.idempotencyKey || null,
     });
 
     const redeemResult = { transaction, pointsRedeemed: dto.points };
 
     // Emit real-time events
-    this.eventsService.emitToUser(userId, EVENTS.TRANSACTION_COMPLETED, redeemResult);
-    this.eventsService.emitToMerchant(dto.merchantId, EVENTS.TRANSACTION_COMPLETED, redeemResult);
+    this.eventsService.emitToUser(
+      userId,
+      EVENTS.TRANSACTION_COMPLETED,
+      redeemResult,
+    );
+    this.eventsService.emitToMerchant(
+      dto.merchantId,
+      EVENTS.TRANSACTION_COMPLETED,
+      redeemResult,
+    );
 
     return redeemResult;
   }
@@ -298,7 +345,8 @@ export class TransactionsService {
     const baseFilter: any = { userId: new Types.ObjectId(userId) };
     if (options.startDate || options.endDate) {
       baseFilter.createdAt = {};
-      if (options.startDate) baseFilter.createdAt.$gte = new Date(options.startDate);
+      if (options.startDate)
+        baseFilter.createdAt.$gte = new Date(options.startDate);
       if (options.endDate) {
         const end = new Date(options.endDate);
         end.setHours(23, 59, 59, 999);
@@ -386,10 +434,27 @@ export class TransactionsService {
 
   async getByMerchantId(
     merchantId: string,
-    options: { cursor?: string; limit?: number; page?: number } = {},
+    options: {
+      cursor?: string;
+      limit?: number;
+      page?: number;
+      startDate?: string;
+      endDate?: string;
+    } = {},
   ): Promise<CursorPaginatedResult<any>> {
     const limit = Math.min(Math.max(options.limit || 20, 1), 100);
-    const baseFilter = { merchantId: new Types.ObjectId(merchantId) };
+    const baseFilter: any = { merchantId: new Types.ObjectId(merchantId) };
+
+    if (options.startDate || options.endDate) {
+      baseFilter.createdAt = {};
+      if (options.startDate)
+        baseFilter.createdAt.$gte = new Date(options.startDate);
+      if (options.endDate) {
+        const end = new Date(options.endDate);
+        end.setHours(23, 59, 59, 999);
+        baseFilter.createdAt.$lte = end;
+      }
+    }
 
     if (!options.cursor && options.page) {
       const skip = (options.page - 1) * limit;
@@ -504,11 +569,27 @@ export class TransactionsService {
     return result;
   }
 
-  async exportMerchantCsv(merchantId: string): Promise<string> {
+  async exportMerchantCsv(
+    merchantId: string,
+    options: { startDate?: string; endDate?: string } = {},
+  ): Promise<string> {
+    const filter: any = { merchantId: new Types.ObjectId(merchantId) };
+    if (options.startDate || options.endDate) {
+      filter.createdAt = {};
+      if (options.startDate)
+        filter.createdAt.$gte = new Date(options.startDate);
+      if (options.endDate) {
+        const end = new Date(options.endDate);
+        end.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = end;
+      }
+    }
+
     const transactions = await this.transactionModel
-      .find({ merchantId: new Types.ObjectId(merchantId) })
+      .find(filter)
       .populate("userId", "name email")
       .sort({ createdAt: -1 })
+      .limit(10000)
       .lean();
 
     const header =
@@ -527,11 +608,27 @@ export class TransactionsService {
     return header + rows.join("\n");
   }
 
-  async exportUserCsv(userId: string): Promise<string> {
+  async exportUserCsv(
+    userId: string,
+    options: { startDate?: string; endDate?: string } = {},
+  ): Promise<string> {
+    const filter: any = { userId: new Types.ObjectId(userId) };
+    if (options.startDate || options.endDate) {
+      filter.createdAt = {};
+      if (options.startDate)
+        filter.createdAt.$gte = new Date(options.startDate);
+      if (options.endDate) {
+        const end = new Date(options.endDate);
+        end.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = end;
+      }
+    }
+
     const transactions = await this.transactionModel
-      .find({ userId: new Types.ObjectId(userId) })
+      .find(filter)
       .populate("merchantId", "name logo")
       .sort({ createdAt: -1 })
+      .limit(10000)
       .lean();
 
     const header = "Date,Type,Merchant,Amount (AED),Points,Reference\n";
@@ -546,5 +643,64 @@ export class TransactionsService {
     });
 
     return header + rows.join("\n");
+  }
+
+  async voidTransaction(
+    transactionId: string,
+    adminId: string,
+    reason?: string,
+  ) {
+    const transaction = await this.transactionModel.findById(transactionId);
+    if (!transaction) throw new NotFoundException("Transaction not found");
+    if (transaction.voidedAt)
+      throw new BadRequestException("Transaction already voided");
+
+    // Reverse the wallet effect
+    const userId = transaction.userId.toString();
+    const merchantId = transaction.merchantId.toString();
+
+    if (transaction.type === "earn") {
+      // Reverse: deduct the earned points from global wallet
+      await this.walletsService.deductPoints(userId, null, transaction.points);
+      // Reverse lifetimeEP
+      await this.userModel.findByIdAndUpdate(userId, {
+        $inc: { lifetimeEP: -transaction.points },
+      });
+    } else {
+      // Reverse: add back the redeemed points to global wallet
+      await this.walletsService.addPoints(userId, null, transaction.points);
+    }
+
+    // Mark as voided
+    transaction.voidedAt = new Date();
+    transaction.voidedBy = new Types.ObjectId(adminId);
+    await transaction.save();
+
+    // Emit real-time event
+    this.eventsService.emitToUser(userId, EVENTS.TRANSACTION_COMPLETED, {
+      voided: true,
+      transactionId,
+      type: transaction.type,
+      points: transaction.points,
+      reason,
+    });
+    this.eventsService.emitToMerchant(
+      merchantId,
+      EVENTS.TRANSACTION_COMPLETED,
+      {
+        voided: true,
+        transactionId,
+        type: transaction.type,
+        points: transaction.points,
+        reason,
+      },
+    );
+
+    return {
+      voided: true,
+      transactionId,
+      type: transaction.type,
+      points: transaction.points,
+    };
   }
 }

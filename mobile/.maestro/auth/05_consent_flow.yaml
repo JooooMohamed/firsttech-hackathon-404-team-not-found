@@ -1,0 +1,21 @@
+appId: com.easypoints
+---
+# Test: Consent screen flow
+- runFlow: ../helpers/fresh_launch.yaml
+
+# Login with demo credentials
+- tapOn: "⚙️ farag@demo.com — Customer"
+- tapOn: "Sign In"
+- waitForAnimationToEnd
+
+# If consent screen appears, verify and accept
+- runFlow:
+    when:
+      visible: "Data Consent"
+    commands:
+      - assertVisible: "Data Consent"
+      - assertVisible: "EasyPoints aggregates"
+      - assertVisible: "Your data is never shared"
+      - assertVisible: "I Agree — Let's Go"
+      - tapOn: "I Agree — Let's Go"
+      - waitForAnimationToEnd

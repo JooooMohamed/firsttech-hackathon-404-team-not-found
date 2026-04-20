@@ -1,0 +1,14 @@
+appId: com.easypoints
+---
+# Test: Login form validation (empty fields)
+- runFlow: ../helpers/fresh_launch.yaml
+
+# Verify login screen
+- assertVisible: "EasyPoints"
+
+# Try to submit with empty fields
+- tapOn: "Sign In"
+
+# Should show validation errors (Zod messages)
+- waitForAnimationToEnd
+- assertVisible: "Email is required"

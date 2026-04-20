@@ -1,0 +1,12 @@
+# EasyPoints Maestro Test Suite Configuration
+# Run: maestro test .maestro/
+
+executionOrder:
+  continueOnFailure: true
+
+# Run flows sequentially (one device, no parallel)
+flows:
+  - "auth/*"
+  - "member/*"
+  - "staff/*"
+  - "admin/*"

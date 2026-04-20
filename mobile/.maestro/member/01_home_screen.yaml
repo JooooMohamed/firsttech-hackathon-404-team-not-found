@@ -1,0 +1,17 @@
+appId: com.easypoints
+---
+# Test: Member home screen displays correctly after login
+- runFlow: ../helpers/login_member.yaml
+
+# Verify home screen elements
+- assertVisible: 'Your loyalty, unified'
+- waitForAnimationToEnd
+
+# Verify balance card / donut chart area is visible
+- assertVisible: 'EasyPoints'
+
+# Verify bottom tab navigation
+- assertVisible: 'Home'
+- assertVisible: 'Merchants'
+- assertVisible: 'Activity'
+- assertVisible: 'Offers'

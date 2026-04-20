@@ -1,0 +1,21 @@
+appId: com.easypoints
+---
+# Test: Login with valid demo credentials
+- runFlow: ../helpers/fresh_launch.yaml
+
+# Verify login screen is visible
+- assertVisible: "EasyPoints"
+- assertVisible: "Your loyalty, simplified"
+
+# Tap demo member shortcut to fill credentials
+- tapOn: "⚙️ farag@demo.com — Customer"
+
+# Verify fields were filled
+- assertVisible: "Sign In"
+
+# Submit login
+- tapOn: "Sign In"
+- waitForAnimationToEnd
+
+# Should leave login screen (no more "Your loyalty, simplified")
+- assertNotVisible: "Your loyalty, simplified"

@@ -1,0 +1,16 @@
+appId: com.easypoints
+---
+# Test: Transaction CSV export (needs a user with transactions)
+- runFlow: ../helpers/login_staff.yaml
+
+# Navigate to Activity tab
+- tapOn: 'Activity'
+- waitForAnimationToEnd
+
+# Verify export button is present (only if transactions exist)
+- runFlow:
+    when:
+      visible: '📊 Export CSV'
+    commands:
+      - tapOn: '📊 Export CSV'
+      - waitForAnimationToEnd

@@ -1,0 +1,24 @@
+appId: com.easypoints
+---
+# Test: Merchant directory screen loads and search works
+- runFlow: ../helpers/login_member.yaml
+
+# Navigate to Merchants tab
+- tapOn: 'Merchants'
+- waitForAnimationToEnd
+
+# Verify merchant directory
+- assertVisible: 'Merchant Directory'
+- assertVisible: 'Earn & redeem EasyPoints'
+
+# Verify "All" filter pill is visible
+- assertVisible: 'All'
+
+# Test search functionality - tap the search input by placeholder
+- tapOn: '🔍 Search merchants...'
+- inputText: 'test'
+- waitForAnimationToEnd
+
+# Clear search
+- eraseText: 4
+- hideKeyboard

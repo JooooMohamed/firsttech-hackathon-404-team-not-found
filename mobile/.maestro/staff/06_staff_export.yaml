@@ -1,0 +1,15 @@
+appId: com.easypoints
+---
+# Test: Export analytics from staff home
+- runFlow: ../helpers/login_staff.yaml
+- waitForAnimationToEnd
+
+# Switch to Staff role
+- runFlow: ../helpers/switch_to_staff.yaml
+
+# Scroll down to find export button and tap it
+- scrollUntilVisible:
+    element: 'Export Analytics'
+    direction: DOWN
+- tapOn: 'Export Analytics'
+- waitForAnimationToEnd

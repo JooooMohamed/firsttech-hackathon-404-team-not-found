@@ -1,0 +1,22 @@
+appId: com.easypoints
+---
+# Test: Staff can switch back to member role
+- runFlow: ../helpers/login_staff.yaml
+- waitForAnimationToEnd
+
+# Switch to Staff role
+- runFlow: ../helpers/switch_to_staff.yaml
+
+# Verify staff mode
+- assertVisible: '🏷️ Staff Mode'
+
+# Switch back to Member role via role switcher button
+- tapOn: '🔄 Switch Role'
+- waitForAnimationToEnd
+
+# Tap Member in the role switcher modal
+- tapOn: 'Member'
+- waitForAnimationToEnd
+
+# Should see member home
+- assertVisible: 'Your loyalty, unified'

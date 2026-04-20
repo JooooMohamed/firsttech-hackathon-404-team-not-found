@@ -1,0 +1,23 @@
+appId: com.easypoints
+---
+# Test: Staff can look up a member code
+- runFlow: ../helpers/login_staff.yaml
+- waitForAnimationToEnd
+
+# Switch to Staff role
+- runFlow: ../helpers/switch_to_staff.yaml
+
+# Verify staff home
+- assertVisible: '🏷️ Staff Mode'
+
+# Try entering an invalid member code in the input field
+- tapOn: 'Enter code (e.g. ABC123)'
+- inputText: 'XXXXXX'
+- hideKeyboard
+
+# Tap look up
+- tapOn: 'Look Up Code'
+- waitForAnimationToEnd
+
+# Should show error alert (Alert.alert with title "Error")
+- assertVisible: 'Error'

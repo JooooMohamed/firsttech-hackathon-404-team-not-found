@@ -1,0 +1,13 @@
+appId: com.easypoints
+---
+# Test: Demo account shortcuts fill credentials
+- runFlow: ../helpers/fresh_launch.yaml
+
+# Verify demo section header is visible
+- assertVisible: "DEMO ACCOUNTS — TAP TO FILL"
+
+# Verify demo accounts are visible (with emoji prefixes)
+- assertVisible: "👤 youssef@demo.com — Admin + Staff + Customer"
+- assertVisible: "🏷️ hafez@demo.com — Staff + Customer"
+- assertVisible: "⚙️ farag@demo.com — Customer"
+- assertVisible: "Password: demo123"

@@ -22,9 +22,19 @@ export class Transaction {
 
   @Prop({ type: String, default: null })
   reference: string | null; // QR session token
+
+  @Prop({ type: String, default: null })
+  idempotencyKey: string | null; // prevents duplicate earn/redeem
+
+  @Prop({ type: Date, default: null })
+  voidedAt: Date | null; // set when transaction is voided
+
+  @Prop({ type: Types.ObjectId, ref: "User", default: null })
+  voidedBy: Types.ObjectId | null; // admin who voided
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);
+TransactionSchema.index({ idempotencyKey: 1 }, { unique: true, sparse: true });
 TransactionSchema.index({ userId: 1 });
 TransactionSchema.index({ merchantId: 1 });
 TransactionSchema.index({ createdAt: -1 });

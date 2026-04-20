@@ -1,0 +1,18 @@
+appId: com.easypoints
+---
+# Test: Transaction history date range filters
+- runFlow: ../helpers/login_member.yaml
+
+# Navigate to Activity tab
+- tapOn: 'Activity'
+- waitForAnimationToEnd
+
+# Test date range filters
+- tapOn: 'Last 7 Days'
+- waitForAnimationToEnd
+
+- tapOn: 'Last 30 Days'
+- waitForAnimationToEnd
+
+- tapOn: 'All Time'
+- waitForAnimationToEnd

@@ -1,0 +1,16 @@
+appId: com.easypoints
+---
+# Test: Member home pull-to-refresh
+- runFlow: ../helpers/login_member.yaml
+
+# Verify home screen
+- assertVisible: 'Your loyalty, unified'
+
+# Pull to refresh
+- swipe:
+    start: 50%, 30%
+    end: 50%, 70%
+
+# Verify screen still shows content after refresh
+- waitForAnimationToEnd
+- assertVisible: 'Your loyalty, unified'

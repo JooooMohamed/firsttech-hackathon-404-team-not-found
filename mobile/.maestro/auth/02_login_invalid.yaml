@@ -1,0 +1,24 @@
+appId: com.easypoints
+---
+# Test: Login with invalid credentials shows error
+- runFlow: ../helpers/fresh_launch.yaml
+
+# Verify login screen
+- assertVisible: "EasyPoints"
+
+# Type invalid email
+- tapOn: "youssef@demo.com"
+- eraseText: 20
+- inputText: "invalid@test.com"
+
+# Type invalid password
+- tapOn: "Enter password"
+- inputText: "wrongpassword"
+- hideKeyboard
+
+# Submit
+- tapOn: "Sign In"
+
+# Should show error message
+- waitForAnimationToEnd
+- assertVisible: "Invalid email or password. Please try again."

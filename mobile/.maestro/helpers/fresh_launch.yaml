@@ -1,0 +1,15 @@
+appId: com.easypoints
+---
+# Helper: Fresh launch with onboarding skip
+- stopApp
+- clearState
+- launchApp
+
+# Wait up to 60s for onboarding "Skip" to appear (cold start)
+- extendedWaitUntil:
+    visible: "Your Loyalty Wallet"
+    timeout: 60000
+
+# Tap Skip to dismiss onboarding
+- tapOn: "Skip"
+- waitForAnimationToEnd

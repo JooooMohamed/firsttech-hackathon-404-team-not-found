@@ -1,0 +1,23 @@
+appId: com.easypoints
+---
+# Test: Sign out flow from settings
+- runFlow: ../helpers/login_member.yaml
+
+# Navigate to Settings tab
+- tapOn: 'Settings'
+- waitForAnimationToEnd
+
+# Scroll down to find Sign Out and tap it
+- scrollUntilVisible:
+    element: 'Sign Out'
+    direction: DOWN
+- tapOn: 'Sign Out'
+- waitForAnimationToEnd
+
+# Confirm the logout alert
+- assertVisible: 'Logout'
+- tapOn: 'Sign Out'
+- waitForAnimationToEnd
+
+# Should return to login screen (onboarding was already skipped in this session)
+- assertVisible: 'Sign In'

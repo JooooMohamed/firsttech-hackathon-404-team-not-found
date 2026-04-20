@@ -1,0 +1,24 @@
+appId: com.easypoints
+---
+# Test: Staff tab navigation
+- runFlow: ../helpers/login_staff.yaml
+- waitForAnimationToEnd
+
+# Switch to Staff role
+- runFlow: ../helpers/switch_to_staff.yaml
+
+# Verify Home tab
+- assertVisible: '🏷️ Staff Mode'
+
+# Navigate to Stats tab
+- tapOn: 'Stats'
+- waitForAnimationToEnd
+
+# Navigate to Settings tab
+- tapOn: 'Settings'
+- waitForAnimationToEnd
+
+# Navigate back to Home
+- tapOn: 'Home'
+- waitForAnimationToEnd
+- assertVisible: '🏷️ Staff Mode'

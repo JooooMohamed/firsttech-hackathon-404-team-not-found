@@ -1,0 +1,12 @@
+appId: com.easypoints
+---
+# Helper: Switch from member mode to admin mode via role switcher
+# Prerequisite: Must be logged in and on member home screen
+
+# Tap the role bar to open Switch Mode modal
+- tapOn: 'Member Mode'
+- waitForAnimationToEnd
+
+# Tap Admin in the role switcher modal
+- tapOn: 'Admin'
+- waitForAnimationToEnd

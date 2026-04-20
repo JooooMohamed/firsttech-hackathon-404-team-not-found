@@ -64,10 +64,11 @@ export const TransactionHistoryScreen: React.FC<{navigation?: any}> = ({
     fetchMyTransactions(getDateRange(dateRange));
   }, [dateRange]);
 
+  const txList = Array.isArray(transactions) ? transactions : [];
   const filtered =
     filter === 'all'
-      ? transactions
-      : transactions.filter((t: Transaction) => t.type === filter);
+      ? txList
+      : txList.filter((t: Transaction) => t.type === filter);
 
   const FILTERS: {key: FilterType; label: string}[] = [
     {key: 'all', label: 'All'},

@@ -20,8 +20,8 @@ export const useTransactionStore = create<TransactionState>(set => ({
   fetchMyTransactions: async params => {
     set({isLoading: true});
     try {
-      const transactions = await transactionsApi.getMyTransactions(params);
-      set({transactions});
+      const result = await transactionsApi.getMyTransactions(params);
+      set({transactions: Array.isArray(result) ? result : []});
     } finally {
       set({isLoading: false});
     }

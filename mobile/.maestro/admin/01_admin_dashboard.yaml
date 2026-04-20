@@ -1,0 +1,12 @@
+appId: com.easypoints
+---
+# Test: Admin dashboard loads after login & role switch
+- runFlow: ../helpers/login_admin.yaml
+- waitForAnimationToEnd
+
+# Switch to Admin role (youssef has admin+staff+member)
+- runFlow: ../helpers/switch_to_admin.yaml
+
+# Verify admin dashboard
+- assertVisible: 'Admin Dashboard'
+- waitForAnimationToEnd

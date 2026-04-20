@@ -1,0 +1,12 @@
+appId: com.easypoints
+---
+# Test: Admin can view merchant stats
+- runFlow: ../helpers/login_admin.yaml
+- waitForAnimationToEnd
+
+# Switch to Admin role
+- runFlow: ../helpers/switch_to_admin.yaml
+
+# Look for stat values on merchant cards
+- waitForAnimationToEnd
+- assertVisible: 'All Merchants Overview'

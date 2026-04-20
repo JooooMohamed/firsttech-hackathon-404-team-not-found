@@ -1,0 +1,17 @@
+appId: com.easypoints
+---
+# Test: Settings screen loads and shows profile info
+- runFlow: ../helpers/login_member.yaml
+
+# Navigate to Settings tab
+- tapOn: 'Settings'
+- waitForAnimationToEnd
+
+# Verify settings screen
+- assertVisible: 'Settings'
+- assertVisible: 'PROFILE'
+
+# Verify sign out button exists
+- scrollUntilVisible:
+    element: 'Sign Out'
+    direction: DOWN

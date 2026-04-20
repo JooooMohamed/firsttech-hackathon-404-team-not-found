@@ -1,0 +1,24 @@
+appId: com.easypoints
+---
+# Test: Navigate to Register screen and verify form fields
+- runFlow: ../helpers/fresh_launch.yaml
+
+# Verify login screen
+- assertVisible: "EasyPoints"
+
+# Navigate to register
+- tapOn: "Don't have an account? Create one"
+- waitForAnimationToEnd
+
+# Verify register screen elements
+- assertVisible: "Join EasyPoints today"
+- assertVisible: "Full Name"
+- assertVisible: "Email"
+- assertVisible: "Password"
+- assertVisible: "Confirm Password"
+- assertVisible: "Create Account"
+
+# Navigate back to login using the back arrow
+- back
+- waitForAnimationToEnd
+- assertVisible: "EasyPoints"

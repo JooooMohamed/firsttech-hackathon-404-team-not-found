@@ -1,0 +1,21 @@
+appId: com.easypoints
+---
+# Helper: Login as a member (farag@demo.com / demo123)
+- runFlow: fresh_launch.yaml
+
+# Tap the demo member account shortcut
+- tapOn: "⚙️ farag@demo.com — Customer"
+
+# Tap Sign In
+- tapOn: "Sign In"
+
+# Wait for consent or home screen
+- waitForAnimationToEnd
+
+# Handle consent screen if it appears
+- runFlow:
+    when:
+      visible: "I Agree — Let's Go"
+    commands:
+      - tapOn: "I Agree — Let's Go"
+      - waitForAnimationToEnd

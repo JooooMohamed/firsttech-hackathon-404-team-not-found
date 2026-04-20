@@ -1,0 +1,30 @@
+appId: com.easypoints
+---
+# Test: Transaction history screen with filters
+- runFlow: ../helpers/login_member.yaml
+
+# Navigate to Activity tab
+- tapOn: 'Activity'
+- waitForAnimationToEnd
+
+# Verify transaction history screen
+- assertVisible: 'Transaction History'
+
+# Verify filter pills are visible
+- assertVisible: 'All'
+
+# Test filter: Earned
+- tapOn: 'Earned'
+- waitForAnimationToEnd
+
+# Back to All
+- tapOn: 'All'
+- waitForAnimationToEnd
+
+# Test filter: Redeemed
+- tapOn: 'Redeemed'
+- waitForAnimationToEnd
+
+# Back to All
+- tapOn: 'All'
+- waitForAnimationToEnd
