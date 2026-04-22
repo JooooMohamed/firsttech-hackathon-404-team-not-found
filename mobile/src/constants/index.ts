@@ -1,12 +1,12 @@
 // ─── Server URL ──────────────────────────────────────────
 // PRODUCTION: Points to the deployed Vercel server (works from anywhere).
-export const API_BASE_URL =
-  'https://firsttech-hackathon-404-team-not-fo.vercel.app/api';
+// export const API_BASE_URL =
+//   'https://firsttech-hackathon-404-team-not-fo.vercel.app/api';
 
-// ─── For LOCAL development only (uncomment and comment the line above) ───
-// const SERVER_IP = '192.168.1.8';
-// const SERVER_PORT = 3000;
-// export const API_BASE_URL = `http://${SERVER_IP}:${SERVER_PORT}/api`;
+// ─── For LOCAL development only ───
+const SERVER_IP = '192.168.60.43';
+const SERVER_PORT = 3000;
+export const API_BASE_URL = `http://${SERVER_IP}:${SERVER_PORT}/api`;
 
 export const COLORS = {
   primary: '#6C63FF',

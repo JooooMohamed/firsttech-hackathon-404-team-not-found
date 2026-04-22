@@ -1,14 +1,26 @@
 node_modules/
 dist/
 .env
+.env.local
+.env*.local
 *.log
 .DS_Store
 ios/Pods/
 android/.gradle/
 android/app/build/
+android/build/
 *.tsbuildinfo
 coverage/
 tmp_assets/
+
+# Next.js
+web/.next/
+web/out/
+
+# Mobile build artifacts
+mobile/ios/build/
+mobile/android/app/build/
+mobile/android/build/
 
 # Dev/demo scripts (not needed in repo)
 DATABASE_POLICY.md
